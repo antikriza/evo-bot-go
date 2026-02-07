@@ -15,11 +15,14 @@ git clone https://github.com/antikriza/evo-bot-go.git && cd evo-bot-go
 # 2. Configure
 cp .env.example .env   # then fill in your values
 
-# 3. Run
+# 3. Run with Docker (recommended)
+docker compose up -d
+
+# Or run directly (requires Go 1.23+ and PostgreSQL)
 go run main.go
 ```
 
-Prerequisites: Go 1.23+, PostgreSQL (tables auto-created on first run).
+The database tables are auto-created on first run (11 migrations).
 
 ## Features
 
@@ -55,7 +58,83 @@ Prerequisites: Go 1.23+, PostgreSQL (tables auto-created on first run).
 - `/help` includes a course link at the bottom
 - `/tryLinkToLearn` sends the course link in a DM
 
-Use `/help` in the bot chat for the full command list.
+Use `/help` in the bot DM for the full command list.
+
+## Usage
+
+### For members
+
+All commands work in **private DM** with the bot (not in the group):
+
+| Command | Description |
+|---------|-------------|
+| `/start` | Welcome message + "Open AI Course" button |
+| `/help` | Full command list |
+| `/tools` | AI-powered search through the Tools topic |
+| `/content` | AI-powered search through the Content topic |
+| `/intro` | Smart search for member profiles |
+| `/profile` | Create, edit, publish your profile |
+| `/events` | View upcoming events |
+| `/topics` | Browse event topics and questions |
+| `/topicAdd` | Suggest a topic for an event |
+| `/cancel` | Cancel any active dialog |
+
+### For admins — saving content to the database
+
+The AI search commands (`/tools`, `/content`, `/intro`) search through messages stored in the bot's database. To add content:
+
+1. Find a useful message in the **Tools** or **Content** topic
+2. **Reply** to that message with the text `update`
+3. The bot saves the message to the database and confirms via DM
+4. Your `update` reply is auto-deleted after 10 seconds
+
+To remove a saved message, reply with `delete` instead.
+
+> **Note**: With Group Privacy ON, the bot cannot see plain-text replies like `update`/`delete` in the group. To use this feature, either disable Group Privacy in @BotFather, or see [Admin content saving with Group Privacy](#admin-content-saving-with-group-privacy) below.
+
+### Admin commands (DM only)
+
+| Command | Description |
+|---------|-------------|
+| `/eventSetup` | Create a new event |
+| `/eventEdit` | Edit an existing event |
+| `/eventStart` | Start an event |
+| `/eventDelete` | Delete an event |
+| `/showTopics` | View topics with delete option |
+| `/profilesManager` | Manage member profiles |
+| `/tryLinkToLearn` | Send the course link to yourself |
+
+### Group Privacy
+
+The bot is designed to work with **Group Privacy ON** (default Telegram setting). In this mode:
+
+- The bot sees only `/commands` and `@mentions` in the group
+- All user-facing features work via private DM
+- Group moderation features (closed thread cleanup, join/leave removal) require Group Privacy OFF
+- Daily summarization requires Group Privacy OFF
+
+### Admin content saving with Group Privacy
+
+With Group Privacy ON, the `update`/`delete` plain-text replies are invisible to the bot. Options:
+
+1. **Disable Group Privacy** in @BotFather for full functionality
+2. **Keep Group Privacy ON** — admin must `@pm_ai_club_bot update` (mention the bot) when replying to save a message *(requires code change)*
+
+### Docker deployment
+
+```bash
+# Start (bot + PostgreSQL)
+docker compose up -d
+
+# View logs
+docker compose logs bot -f
+
+# Restart after code changes
+docker compose build bot && docker compose up -d bot
+
+# Stop
+docker compose down
+```
 
 ## Technology Stack
 
@@ -199,4 +278,5 @@ Forked from [it-beard/evo-bot-go](https://github.com/it-beard/evo-bot-go). Key c
 - Removed "Evocoders" / "Evolution of Code" branding
 - Integrated [AI & Programming Course Mini App](https://antikriza.github.io/BBD-evolution-code-clone/telegram-archive/course/twa/index.html) (42 topics, 5 levels)
 - Added `.env.example` for easier setup
+- Added `Dockerfile` and `docker-compose.yml` for containerized deployment
 - Renamed `GetTypeInRussian()` to `GetTypeName()` in event formatters

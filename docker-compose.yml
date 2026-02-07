@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: evobot
+      POSTGRES_USER: evobot
+      POSTGRES_PASSWORD: evobot_secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # No host port needed — bot connects via internal Docker network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evobot"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  bot:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      TG_EVO_BOT_DB_CONNECTION: postgres://evobot:evobot_secret@db:5432/evobot?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
