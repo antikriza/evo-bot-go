@@ -98,18 +98,18 @@ func (h *eventDeleteHandler) startDelete(b *gotgbot.Bot, ctx *ext.Context) error
 	// Get a list of the last N events
 	events, err := h.eventRepository.GetLastEvents(constants.EventEditGetLastLimit)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при получении списка мероприятий.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while retrieving the list of events.", nil)
 		log.Printf("%s: Error during event retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	if len(events) == 0 {
-		h.messageSenderService.Reply(msg, "Нет созданных мероприятий для удаления.", nil)
+		h.messageSenderService.Reply(msg, "No events available for deletion.", nil)
 		return handlers.EndConversation()
 	}
 
-	title := fmt.Sprintf("Последние %d мероприятия:", len(events))
-	actionDescription := "которое ты хочешь удалить"
+	title := fmt.Sprintf("Last %d events:", len(events))
+	actionDescription := "that you want to delete"
 	formattedResponse := formatters.FormatEventListForAdmin(events, title, constants.CancelCommand, actionDescription)
 
 	sentMsg, _ := h.messageSenderService.ReplyMarkdownWithReturnMessage(
@@ -130,14 +130,14 @@ func (h *eventDeleteHandler) handleSelectEvent(b *gotgbot.Bot, ctx *ext.Context)
 	eventIDStr := strings.TrimSpace(strings.Replace(msg.Text, "/", "", 1))
 	eventID, err := strconv.Atoi(eventIDStr)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Некорректный ID. Пожалуйста, введи числовой ID или используй кнопку для отмены.", nil)
+		h.messageSenderService.Reply(msg, "Invalid ID. Please enter a numeric ID or use the cancel button.", nil)
 		return nil // Stay in the same state
 	}
 
 	// Get the last N events
 	events, err := h.eventRepository.GetLastEvents(constants.EventEditGetLastLimit)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при получении списка мероприятий.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while retrieving the list of events.", nil)
 		log.Printf("%s: Error during event retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -156,7 +156,7 @@ func (h *eventDeleteHandler) handleSelectEvent(b *gotgbot.Bot, ctx *ext.Context)
 	if !found {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Мероприятие с ID %d не найдено. Пожалуйста, введи корректный ID или используй кнопку для отмены.", eventID),
+			fmt.Sprintf("Event with ID %d not found. Please enter a valid ID or use the cancel button.", eventID),
 			nil,
 		)
 		return nil // Stay in the same state
@@ -170,7 +170,7 @@ func (h *eventDeleteHandler) handleSelectEvent(b *gotgbot.Bot, ctx *ext.Context)
 
 	// Ask for confirmation
 	confirmMessage := fmt.Sprintf(
-		"Ты действительно хочешь удалить мероприятие '*%s*' (ID: %d)?\n\nЭто также удалит все связанные с ним темы и вопросы.",
+		"Are you sure you want to delete event '*%s*' (ID: %d)?\n\nThis will also delete all associated topics and questions.",
 		eventName, eventID)
 
 	sentMsg, _ := h.messageSenderService.ReplyMarkdownWithReturnMessage(
@@ -190,7 +190,7 @@ func (h *eventDeleteHandler) handleSelectEvent(b *gotgbot.Bot, ctx *ext.Context)
 func (h *eventDeleteHandler) handleMessageDuringConfirmation(b *gotgbot.Bot, ctx *ext.Context) error {
 	h.messageSenderService.Reply(
 		ctx.EffectiveMessage,
-		"Пожалуйста, используй кнопки выше для подтверждения или отмены.",
+		"Please use the buttons above to confirm or cancel.",
 		nil,
 	)
 	return nil // Stay in the same state
@@ -210,7 +210,7 @@ func (h *eventDeleteHandler) handleCallbackConfirmYes(b *gotgbot.Bot, ctx *ext.C
 		h.messageSenderService.Reply(
 			ctx.EffectiveMessage,
 			fmt.Sprintf(
-				"Произошла ошибка при получении выбранного мероприятия. Пожалуйста, начни заново с /%s",
+				"An error occurred while retrieving the selected event. Please start over with /%s",
 				constants.EventDeleteCommand,
 			),
 			nil,
@@ -225,7 +225,7 @@ func (h *eventDeleteHandler) handleCallbackConfirmYes(b *gotgbot.Bot, ctx *ext.C
 		h.messageSenderService.Reply(
 			ctx.EffectiveMessage,
 			fmt.Sprintf(
-				"Произошла внутренняя ошибка (неверный тип ID). Пожалуйста, начни заново с /%s",
+				"An internal error occurred (invalid ID type). Please start over with /%s",
 				constants.EventDeleteCommand,
 			),
 			nil,
@@ -238,14 +238,14 @@ func (h *eventDeleteHandler) handleCallbackConfirmYes(b *gotgbot.Bot, ctx *ext.C
 	eventNameVal, ok := h.userStore.Get(ctx.EffectiveUser.Id, eventDeleteCtxDataKeySelectedEventName)
 	if !ok {
 		// Not critical, we can proceed without the name
-		eventNameVal = "неизвестно"
+		eventNameVal = "unknown"
 	}
 	eventName, _ := eventNameVal.(string)
 
 	// Delete the event
 	err := h.eventRepository.DeleteEvent(eventID)
 	if err != nil {
-		h.messageSenderService.Reply(ctx.EffectiveMessage, "Произошла ошибка при удалении мероприятия.", nil)
+		h.messageSenderService.Reply(ctx.EffectiveMessage, "An error occurred while deleting the event.", nil)
 		log.Printf("%s: Error during event deletion: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -253,7 +253,7 @@ func (h *eventDeleteHandler) handleCallbackConfirmYes(b *gotgbot.Bot, ctx *ext.C
 	// Confirmation message
 	h.messageSenderService.ReplyMarkdown(
 		ctx.EffectiveMessage,
-		fmt.Sprintf("Мероприятие '*%s*' успешно удалено. \n\nДля просмотра всех команд используй команду /%s", eventName, constants.HelpCommand),
+		fmt.Sprintf("Event '*%s*' successfully deleted. \n\nTo view all commands, use /%s", eventName, constants.HelpCommand),
 		&gotgbot.SendMessageOpts{
 			ParseMode: "Markdown",
 		},
@@ -279,7 +279,7 @@ func (h *eventDeleteHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) erro
 	msg := ctx.EffectiveMessage
 
 	h.MessageRemoveInlineKeyboard(b, &ctx.EffectiveUser.Id)
-	h.messageSenderService.Reply(msg, "Операция удаления мероприятия отменена.", nil)
+	h.messageSenderService.Reply(msg, "Event deletion operation canceled.", nil)
 
 	// Clean up user data
 	h.userStore.Clear(ctx.EffectiveUser.Id)

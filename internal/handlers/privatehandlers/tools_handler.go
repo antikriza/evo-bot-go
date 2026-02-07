@@ -123,7 +123,7 @@ func (h *toolsHandler) startToolSearch(b *gotgbot.Bot, ctx *ext.Context) error {
 	// Ask user to enter search query
 	sentMsg, _ := h.messageSenderService.SendWithReturnMessage(
 		msg.Chat.Id,
-		"Пришли мне поисковый запрос по инструментам:",
+		"Send me a search query for tools:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.CancelButton(toolsCallbackConfirmCancel),
 		},
@@ -142,7 +142,7 @@ func (h *toolsHandler) selectSearchType(b *gotgbot.Bot, ctx *ext.Context) error 
 	if query == "" {
 		h.messageSenderService.Send(
 			msg.Chat.Id,
-			fmt.Sprintf("Поисковый запрос не может быть пустым. Пожалуйста, введи запрос или используй /%s для отмены.",
+			fmt.Sprintf("Search query cannot be empty. Please enter a query or use /%s to cancel.",
 				constants.CancelCommand),
 			nil,
 		)
@@ -160,7 +160,7 @@ func (h *toolsHandler) selectSearchType(b *gotgbot.Bot, ctx *ext.Context) error 
 	// Show search type selection
 	sentMsg, _ := h.messageSenderService.SendWithReturnMessage(
 		msg.Chat.Id,
-		fmt.Sprintf("Запрос: \"%s\"\n\nВыбери тип поиска:", query),
+		fmt.Sprintf("Query: \"%s\"\n\nSelect search type:", query),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.SearchTypeSelectionButton(
 				toolsCallbackFastSearch,
@@ -210,7 +210,7 @@ func (h *toolsHandler) processToolSearchWithType(b *gotgbot.Bot, ctx *ext.Contex
 		msg.Delete(b, nil)
 		warningMsg, _ := h.messageSenderService.SendWithReturnMessage(
 			msg.Chat.Id,
-			fmt.Sprintf("Пожалуйста, дождись окончания обработки предыдущего запроса, или используй /%s для отмены.",
+			fmt.Sprintf("Please wait for the previous request to finish, or use /%s to cancel.",
 				constants.CancelCommand),
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.CancelButton(toolsCallbackConfirmCancel),
@@ -229,7 +229,7 @@ func (h *toolsHandler) processToolSearchWithType(b *gotgbot.Bot, ctx *ext.Contex
 	// If search type isn't chosen yet, don't start processing; prompt the user
 	if !hasSearchType || !okType || strings.TrimSpace(searchType) == "" {
 		// If we're mid-processing, the early return above would have handled it; here we just remind user to choose type
-		h.messageSenderService.Send(msg.Chat.Id, "Сначала выбери тип поиска кнопками выше!", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "Please select a search type using the buttons above first!", nil)
 		return nil
 	}
 
@@ -251,14 +251,14 @@ func (h *toolsHandler) processToolSearchWithType(b *gotgbot.Bot, ctx *ext.Contex
 	h.RemovePreviousMessage(b, &userId)
 
 	// Inform user that search has started with search type info
-	searchTypeText := "быстрый"
+	searchTypeText := "fast"
 	if searchType == constants.SearchTypeDeep {
-		searchTypeText = "глубокий"
+		searchTypeText = "deep"
 	}
 
 	sentMsg, _ := h.messageSenderService.SendWithReturnMessage(
 		msg.Chat.Id,
-		fmt.Sprintf("Ищу информацию по запросу: \"%s\" (%s поиск)...", query, searchTypeText),
+		fmt.Sprintf("Searching for: \"%s\" (%s search)...", query, searchTypeText),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.CancelButton(toolsCallbackConfirmCancel),
 		},
@@ -272,20 +272,20 @@ func (h *toolsHandler) processToolSearchWithType(b *gotgbot.Bot, ctx *ext.Contex
 	// Get messages from chat
 	messages, err := h.groupMessageRepository.GetAllByGroupTopicID(int64(h.config.ToolTopicID))
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при получении сообщений из базы данных.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while retrieving messages from the database.", nil)
 		log.Printf("%s: Error during message retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	dataMessages, err := h.preprocessingMessages(messages)
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при подготовке сообщений для поиска.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while preparing messages for search.", nil)
 		log.Printf("%s: Error during messages preparation: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	topicLink := fmt.Sprintf("https://t.me/c/%d/%d", h.config.SuperGroupChatID, h.config.ToolTopicID)
-	topicName := "Инструменты"
+	topicName := "Tools"
 	topic, err := h.groupTopicRepository.GetGroupTopicByTopicID(int64(h.config.ToolTopicID))
 	if err != nil {
 		log.Printf("%s: Error during topic information retrieval: %v", utils.GetCurrentTypeName(), err)
@@ -295,7 +295,7 @@ func (h *toolsHandler) processToolSearchWithType(b *gotgbot.Bot, ctx *ext.Contex
 
 	templateText, err := h.promptingTemplateRepository.Get(prompts.GetToolPromptKey, prompts.GetToolPromptDefaultValue)
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при получении шаблона для поиска инструментов.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while retrieving the tool search template.", nil)
 		log.Printf("%s: Error during template retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -347,14 +347,14 @@ func (h *toolsHandler) processToolSearchWithType(b *gotgbot.Bot, ctx *ext.Contex
 
 	// Continue only if no errors
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при получении ответа от OpenAI.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while retrieving the response from OpenAI.", nil)
 		log.Printf("%s: Error during OpenAI response retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	err = h.messageSenderService.SendHtml(msg.Chat.Id, responseOpenAi, nil)
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при отправке ответа.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while sending the response.", nil)
 		log.Printf("%s: Error during message sending: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	} else {
@@ -383,10 +383,10 @@ func (h *toolsHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) error {
 		// Call the cancel function to stop any ongoing API calls
 		if cf, ok := cancelFunc.(context.CancelFunc); ok {
 			cf()
-			h.messageSenderService.Send(msg.Chat.Id, "Операция поиска инструментов отменена.", nil)
+			h.messageSenderService.Send(msg.Chat.Id, "Tool search operation cancelled.", nil)
 		}
 	} else {
-		h.messageSenderService.Send(msg.Chat.Id, "Операция поиска инструментов отменена.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "Tool search operation cancelled.", nil)
 	}
 
 	h.RemovePreviousMessage(b, &ctx.EffectiveUser.Id)

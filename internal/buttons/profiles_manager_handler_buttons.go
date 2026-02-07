@@ -11,11 +11,11 @@ func ProfilesBackCancelButtons(backCallbackData string) gotgbot.InlineKeyboardMa
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "◀️ Назад",
+					Text:         "\u25c0\ufe0f Back",
 					CallbackData: backCallbackData,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.AdminProfilesCancelCallback,
 				},
 			},
@@ -28,15 +28,15 @@ func ProfilesBackStartCancelButtons(backCallbackData string) gotgbot.InlineKeybo
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "◀️ Назад",
+					Text:         "\u25c0\ufe0f Back",
 					CallbackData: backCallbackData,
 				},
 				{
-					Text:         "⏪ Старт",
+					Text:         "\u23ea Start",
 					CallbackData: constants.AdminProfilesStartCallback,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.AdminProfilesCancelCallback,
 				},
 			},
@@ -48,9 +48,9 @@ func ProfilesBackStartCancelButtons(backCallbackData string) gotgbot.InlineKeybo
 func ProfilesCoffeeBanButtons(backCallbackData string, hasCoffeeBan bool) gotgbot.InlineKeyboardMarkup {
 	var toggleButtonText string
 	if hasCoffeeBan {
-		toggleButtonText = "✅ Разрешить"
+		toggleButtonText = "\u2705 Allow"
 	} else {
-		toggleButtonText = "❌ Запретить"
+		toggleButtonText = "\u274c Ban"
 	}
 
 	return gotgbot.InlineKeyboardMarkup{
@@ -63,11 +63,11 @@ func ProfilesCoffeeBanButtons(backCallbackData string, hasCoffeeBan bool) gotgbo
 			},
 			{
 				{
-					Text:         "◀️ Назад",
+					Text:         "\u25c0\ufe0f Back",
 					CallbackData: backCallbackData,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.AdminProfilesCancelCallback,
 				},
 			},
@@ -80,45 +80,45 @@ func ProfilesEditMenuButtons(backCallbackData string) gotgbot.InlineKeyboardMark
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "👤 Имя",
+					Text:         "\U0001f464 First Name",
 					CallbackData: constants.AdminProfilesEditFirstnameCallback,
 				},
 				{
-					Text:         "👤 Фамилия",
+					Text:         "\U0001f464 Last Name",
 					CallbackData: constants.AdminProfilesEditLastnameCallback,
 				},
 				{
-					Text:         "👤 Username",
+					Text:         "\U0001f464 Username",
 					CallbackData: constants.AdminProfilesEditUsernameCallback,
 				},
 			},
 			{
 				{
-					Text:         "📝 О себе",
+					Text:         "\U0001f4dd Bio",
 					CallbackData: constants.AdminProfilesEditBioCallback,
 				},
 				{
-					Text:         "☕️ Кофе?",
+					Text:         "\u2615\ufe0f Coffee?",
 					CallbackData: constants.AdminProfilesEditCoffeeBanCallback,
 				},
 			},
 			{
 				{
-					Text:         "📢 Го! (+ превью)",
+					Text:         "\U0001f4e2 Publish (+ preview)",
 					CallbackData: constants.AdminProfilesPublishCallback,
 				},
 				{
-					Text:         "📢 Го! (- превью)",
+					Text:         "\U0001f4e2 Publish (- preview)",
 					CallbackData: constants.AdminProfilesPublishNoPreviewCallback,
 				},
 			},
 			{
 				{
-					Text:         "◀️ Назад",
+					Text:         "\u25c0\ufe0f Back",
 					CallbackData: backCallbackData,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.AdminProfilesCancelCallback,
 				},
 			},
@@ -131,37 +131,37 @@ func ProfilesMainMenuButtons() gotgbot.InlineKeyboardMarkup {
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "📝 Поиск по Telegram Username",
+					Text:         "\U0001f4dd Search by Telegram Username",
 					CallbackData: constants.AdminProfilesSearchByUsernameCallback,
 				},
 			},
 			{
 				{
-					Text:         "🔍 Поиск по Telegram ID",
+					Text:         "\U0001f50d Search by Telegram ID",
 					CallbackData: constants.AdminProfilesSearchByTelegramIDCallback,
 				},
 			},
 			{
 				{
-					Text:         "🔍 Поиск по имени и фамилии",
+					Text:         "\U0001f50d Search by full name",
 					CallbackData: constants.AdminProfilesSearchByFullNameCallback,
 				},
 			},
 			{
 				{
-					Text:         "➕ Создать профиль (через реплай)",
+					Text:         "\u2795 Create profile (via forward)",
 					CallbackData: constants.AdminProfilesCreateByForwardedMessageCallback,
 				},
 			},
 			{
 				{
-					Text:         "🆔 Создать профиль по TelegramID",
+					Text:         "\U0001f194 Create profile by Telegram ID",
 					CallbackData: constants.AdminProfilesCreateByTelegramIDCallback,
 				},
 			},
 			{
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.AdminProfilesCancelCallback,
 				},
 			},

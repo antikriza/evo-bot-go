@@ -100,7 +100,7 @@ func (h *eventSetupHandler) startSetup(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	sentMsg, _ := h.messageSenderService.ReplyWithReturnMessage(
 		msg,
-		"Пожалуйста, введи название для нового мероприятия:",
+		"Please enter a name for the new event:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.CancelButton(eventSetupCallbackConfirmCancel),
 		},
@@ -118,7 +118,7 @@ func (h *eventSetupHandler) handleEventName(b *gotgbot.Bot, ctx *ext.Context) er
 	if eventName == "" {
 		h.messageSenderService.Reply(
 			msg,
-			"Название не может быть пустым. Пожалуйста, введи название для мероприятия или используй кнопку для отмены.",
+			"Name cannot be empty. Please enter a name for the event or use the cancel button.",
 			nil,
 		)
 		return nil // Stay in the same state
@@ -134,7 +134,7 @@ func (h *eventSetupHandler) handleEventName(b *gotgbot.Bot, ctx *ext.Context) er
 	for i, eventType := range constants.AllEventTypes {
 		eventTypeOptions = append(eventTypeOptions, fmt.Sprintf("/%d. %s", i+1, eventType))
 	}
-	typeOptions := fmt.Sprintf("Выбери тип мероприятия (введи число):\n%s",
+	typeOptions := fmt.Sprintf("Select event type (enter a number):\n%s",
 		strings.Join(eventTypeOptions, "\n"),
 	)
 
@@ -162,7 +162,7 @@ func (h *eventSetupHandler) handleEventType(b *gotgbot.Bot, ctx *ext.Context) er
 	if err != nil || index < 1 || index > len(constants.AllEventTypes) {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Неверный выбор. Пожалуйста, введи число от 1 до %d, или используй кнопку для отмены.",
+			fmt.Sprintf("Invalid selection. Please enter a number from 1 to %d, or use the cancel button.",
 				len(constants.AllEventTypes),
 			),
 			nil,
@@ -180,7 +180,7 @@ func (h *eventSetupHandler) handleEventType(b *gotgbot.Bot, ctx *ext.Context) er
 	if !ok {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Произошла внутренняя ошибка. Не удалось найти название мероприятия. Попробуй начать заново с /%s.",
+			fmt.Sprintf("An internal error occurred. Could not find the event name. Try starting over with /%s.",
 				constants.EventSetupCommand,
 			),
 			nil,
@@ -192,7 +192,7 @@ func (h *eventSetupHandler) handleEventType(b *gotgbot.Bot, ctx *ext.Context) er
 	if !ok {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Произошла внутренняя ошибка (неверный тип названия). Попробуй начать заново с /%s.",
+			fmt.Sprintf("An internal error occurred (invalid name type). Try starting over with /%s.",
 				constants.EventSetupCommand,
 			),
 			nil,
@@ -203,7 +203,7 @@ func (h *eventSetupHandler) handleEventType(b *gotgbot.Bot, ctx *ext.Context) er
 	// Create event in the database
 	id, err := h.eventRepository.CreateEvent(eventName, eventType)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при создании записи о мероприятии.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while creating the event record.", nil)
 		log.Printf("%s: Error during event creation: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -214,7 +214,7 @@ func (h *eventSetupHandler) handleEventType(b *gotgbot.Bot, ctx *ext.Context) er
 	// Ask for start date
 	sentMsg, _ := h.messageSenderService.ReplyWithReturnMessage(
 		msg,
-		"Когда стартует мероприятие? Введи дату и время в формате DD.MM.YYYY HH:MM:",
+		"When does the event start? Enter date and time in DD.MM.YYYY HH:MM format:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.CancelButton(eventSetupCallbackConfirmCancel),
 		},
@@ -234,7 +234,7 @@ func (h *eventSetupHandler) handleEventStartedAt(b *gotgbot.Bot, ctx *ext.Contex
 	if err != nil {
 		h.messageSenderService.Reply(
 			msg,
-			"Неверный формат даты. Пожалуйста, введи дату и время в формате DD.MM.YYYY HH:MM или используй кнопку для отмены.",
+			"Invalid date format. Please enter date and time in DD.MM.YYYY HH:MM format or use the cancel button.",
 			nil,
 		)
 		return nil // Stay in the same state
@@ -247,7 +247,7 @@ func (h *eventSetupHandler) handleEventStartedAt(b *gotgbot.Bot, ctx *ext.Contex
 	if !ok {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Произошла внутренняя ошибка. Не удалось найти ID мероприятия. Попробуй начать заново с /%s.",
+			fmt.Sprintf("An internal error occurred. Could not find the event ID. Try starting over with /%s.",
 				constants.EventSetupCommand,
 			),
 			nil,
@@ -259,7 +259,7 @@ func (h *eventSetupHandler) handleEventStartedAt(b *gotgbot.Bot, ctx *ext.Contex
 	if !ok {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Произошла внутренняя ошибка (неверный тип ID). Попробуй начать заново с /%s.",
+			fmt.Sprintf("An internal error occurred (invalid ID type). Try starting over with /%s.",
 				constants.EventSetupCommand,
 			),
 			nil,
@@ -270,7 +270,7 @@ func (h *eventSetupHandler) handleEventStartedAt(b *gotgbot.Bot, ctx *ext.Contex
 	// Update the started_at field
 	err = h.eventRepository.UpdateEventStartedAt(eventID, startedAt)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при обновлении даты начала мероприятия.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while updating the event start date.", nil)
 		log.Printf("%s: Error during event update: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -278,14 +278,14 @@ func (h *eventSetupHandler) handleEventStartedAt(b *gotgbot.Bot, ctx *ext.Contex
 	// Get event name for the success message
 	eventNameVal, ok := h.userStore.Get(ctx.EffectiveUser.Id, eventSetupCtxDataKeyEventName)
 	if !ok {
-		h.messageSenderService.Reply(msg, "Мероприятие успешно создано с датой старта.", nil)
+		h.messageSenderService.Reply(msg, "Event successfully created with start date.", nil)
 		h.userStore.Clear(ctx.EffectiveUser.Id)
 		return handlers.EndConversation()
 	}
 
 	eventName, ok := eventNameVal.(string)
 	if !ok {
-		h.messageSenderService.Reply(msg, "Мероприятие успешно создано с датой старта.", nil)
+		h.messageSenderService.Reply(msg, "Event successfully created with start date.", nil)
 		h.userStore.Clear(ctx.EffectiveUser.Id)
 		return handlers.EndConversation()
 	}
@@ -294,7 +294,7 @@ func (h *eventSetupHandler) handleEventStartedAt(b *gotgbot.Bot, ctx *ext.Contex
 	h.messageSenderService.Reply(
 		msg,
 		fmt.Sprintf(
-			"Запись о мероприятии '*%s*' успешно создана с ID: %d и датой старта: *%s*\n\nДля редактирования мероприятия используй команду /%s.\nДля просмотра всех команд используй команду /%s",
+			"Event record '*%s*' successfully created with ID: %d and start date: *%s*\n\nTo edit the event, use the /%s command.\nTo view all commands, use /%s",
 			eventName, eventID, startedAt.Format("02.01.2006 15:04"), constants.EventEditCommand, constants.HelpCommand,
 		),
 		&gotgbot.SendMessageOpts{
@@ -322,7 +322,7 @@ func (h *eventSetupHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) error
 	msg := ctx.EffectiveMessage
 
 	h.MessageRemoveInlineKeyboard(b, &ctx.EffectiveUser.Id)
-	h.messageSenderService.Reply(msg, "Операция создания мероприятия отменена.", nil)
+	h.messageSenderService.Reply(msg, "Event creation operation canceled.", nil)
 
 	// Clean up user data
 	h.userStore.Clear(ctx.EffectiveUser.Id)

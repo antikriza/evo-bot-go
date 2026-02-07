@@ -89,14 +89,14 @@ func (h *trySummarizeHandler) startSummarizeConversation(b *gotgbot.Bot, ctx *ex
 
 	// Check if the user is an admin
 	if !utils.IsUserAdminOrCreator(b, msg.From.Id, h.config) {
-		msg.Reply(b, "Эта команда доступна только администраторам.", nil)
+		msg.Reply(b, "This command is available only to administrators.", nil)
 		return handlers.EndConversation()
 	}
 
 	// Ask user to confirm with inline keyboard
 	sentMsg, _ := h.messageSenderService.ReplyWithReturnMessage(
 		msg,
-		"Вы собираетесь запустить процесс тестирования саммаризации общения в клубе. Саммаризация будет отправлена в личные сообщения.\n\nПодтвердите действие, нажав одну из кнопок ниже:",
+		"You are about to start the test summarization process for community chat. The summary will be sent to your direct messages.\n\nConfirm the action by clicking one of the buttons below:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ConfirmAndCancelButton(trySummarizeCallbackConfirmYes, trySummarizeCallbackConfirmCancel),
 		},
@@ -123,7 +123,7 @@ func (h *trySummarizeHandler) handleCallbackCancel(b *gotgbot.Bot, ctx *ext.Cont
 	_, _ = cb.Answer(b, nil)
 
 	h.MessageRemoveInlineKeyboard(b, &ctx.EffectiveUser.Id)
-	h.messageSenderService.Reply(ctx.EffectiveMessage, "Операция саммаризации отменена.", nil)
+	h.messageSenderService.Reply(ctx.EffectiveMessage, "Summarization operation canceled.", nil)
 	log.Printf("%s: Summarization canceled", utils.GetCurrentTypeName())
 
 	// Clean up user data
@@ -140,7 +140,7 @@ func (h *trySummarizeHandler) startSummarization(b *gotgbot.Bot, ctx *ext.Contex
 	// Get the handler name using our new utility function
 	log.Printf("%s: Starting summarization process", utils.GetCurrentTypeName())
 
-	h.messageSenderService.Reply(ctx.EffectiveMessage, "Запуск процесса саммаризации...", nil)
+	h.messageSenderService.Reply(ctx.EffectiveMessage, "Starting the summarization process...", nil)
 
 	// Send typing action using MessageSender.
 	h.messageSenderService.SendTypingAction(chatId)
@@ -172,11 +172,11 @@ func (h *trySummarizeHandler) startSummarization(b *gotgbot.Bot, ctx *ext.Contex
 		// Run the summarization with sendToDM=true as default
 		err := h.summarizationService.RunDailySummarization(ctxTimeout, true)
 		if err != nil {
-			h.messageSenderService.Reply(ctx.EffectiveMessage, "Ошибка при создании саммаризации.", nil)
+			h.messageSenderService.Reply(ctx.EffectiveMessage, "Error creating the summary.", nil)
 			log.Printf("%s: Error during summarization: %v", utils.GetCurrentTypeName(), err)
 		}
 
-		h.messageSenderService.Reply(ctx.EffectiveMessage, "Саммаризация успешно создана.", nil)
+		h.messageSenderService.Reply(ctx.EffectiveMessage, "Summary created successfully.", nil)
 		log.Printf("%s: Summarization created successfully", utils.GetCurrentTypeName())
 
 		// Cancel the periodic typing action immediately after getting the response.
@@ -197,7 +197,7 @@ func (h *trySummarizeHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) err
 	log.Printf("%s: User %d canceled using /cancel command", utils.GetCurrentTypeName(), msg.From.Id)
 
 	h.MessageRemoveInlineKeyboard(b, &ctx.EffectiveUser.Id)
-	h.messageSenderService.Reply(msg, "Операция саммаризации отменена.", nil)
+	h.messageSenderService.Reply(msg, "Summarization operation canceled.", nil)
 	log.Printf("%s: Summarization canceled", utils.GetCurrentTypeName())
 
 	// Clean up user data
@@ -212,7 +212,7 @@ func (h *trySummarizeHandler) handleTextDuringConfirmation(b *gotgbot.Bot, ctx *
 
 	h.messageSenderService.Reply(
 		ctx.EffectiveMessage,
-		"Пожалуйста, нажмите на одну из кнопок выше, или используйте кнопку отмены.",
+		"Please click one of the buttons above, or use the cancel button.",
 		nil,
 	)
 	return nil // Stay in the same state

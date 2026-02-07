@@ -39,13 +39,13 @@ func (h *tryLinkToLearnHandler) handle(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	return h.messageService.Send(
 		msg.Chat.Id,
-		"База знаний Эволюции Кода ➡️",
+		"AI & Programming Course (42 topics, 5 levels) \u2192",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: gotgbot.InlineKeyboardMarkup{
 				InlineKeyboard: [][]gotgbot.InlineKeyboardButton{{
 					{
-						Text: "База знаний",
-						Url:  "https://t.me/the_evocoders_learn_bot/base?startapp=app",
+						Text: "\U0001f4d6 Open AI Course",
+						Url:  "https://antikriza.github.io/BBD-evolution-code-clone/telegram-archive/course/twa/index.html",
 					},
 				}},
 			},

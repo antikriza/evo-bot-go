@@ -65,11 +65,11 @@ func (h *CleanClosedThreadsService) CleanClosedThreads(msg *gotgbot.Message, b *
 	}
 	threadUrl := fmt.Sprintf("<a href=\"https://t.me/c/%s/%d\">\"%s\"</a>", chatIdStr, msg.MessageThreadId, topicName)
 	messageText := fmt.Sprintf(
-		"<b>Приношу свои извинения</b> 🧐\n\n"+
-			"Твоё сообщение в канале %s было удалено, поскольку этот канал предназначен только для чтения. \n\n"+
-			"Однако ты можешь присоединиться к обсуждению, используя функцию <b>Reply</b> (ответ) на интересующий тебя пост. "+
-			"Твой ответ автоматически появится в чате \"<i>%s</i>\" 👌\n\n"+
-			"⬇️ <i>Копия твоего сообщения</i> ⬇️",
+		"<b>My apologies</b> 🧐\n\n"+
+			"Your message in the channel %s has been removed because this channel is read-only.\n\n"+
+			"However, you can join the discussion by using the <b>Reply</b> function on the post you're interested in. "+
+			"Your reply will automatically appear in the \"<i>%s</i>\" chat 👌\n\n"+
+			"⬇️ <i>A copy of your message</i> ⬇️",
 		threadUrl,
 		mainConversationTopicName,
 	)

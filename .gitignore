@@ -12,6 +12,7 @@
 .DS_Store
 Thumbs.db
 .gitpmoji.env
+.env
 __debug*
 
 session.json

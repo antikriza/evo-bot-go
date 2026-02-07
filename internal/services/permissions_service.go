@@ -33,7 +33,7 @@ func (s *PermissionsService) CheckAdminPermissions(msg *gotgbot.Message, command
 	if !utils.IsUserAdminOrCreator(s.bot, msg.From.Id, s.config) {
 		if err := s.messageSenderService.Reply(
 			msg,
-			"Эта команда доступна только администраторам.",
+			"This command is only available to administrators.",
 			nil,
 		); err != nil {
 			log.Printf("%s: Failed to send admin-only message: %v", utils.GetCurrentTypeName(), err)
@@ -51,9 +51,9 @@ func (s *PermissionsService) CheckPrivateChatType(msg *gotgbot.Message) bool {
 	if msg.Chat.Type != constants.PrivateChatType {
 		if err := s.messageSenderService.ReplyWithCleanupAfterDelayWithPing(
 			msg,
-			"*Прошу прощения* 🧐\n\nЭта команда работает только в _личной беседе_ со мной. "+
-				"Напишите мне в ЛС, и я с удовольствием помогу (я тебя там пинганул, если мы общались ранее)."+
-				"\n\nДанное сообщение и твоя команда будут автоматически удалены через 10 секунд.",
+			"*My apologies* 🧐\n\nThis command only works in a _private chat_ with me. "+
+				"Send me a DM and I'll be happy to help (I pinged you there if we've chatted before)."+
+				"\n\nThis message and your command will be automatically deleted in 10 seconds.",
 			10, &gotgbot.SendMessageOpts{
 				ParseMode: "Markdown",
 			}); err != nil {
@@ -69,7 +69,7 @@ func (s *PermissionsService) CheckClubMemberPermissions(msg *gotgbot.Message, co
 	if !utils.IsUserClubMember(s.bot, msg.From.Id, s.config) {
 		if err := s.messageSenderService.Reply(
 			msg,
-			"Эта команда доступна только участникам клуба.",
+			"This command is only available to group members.",
 			nil,
 		); err != nil {
 			log.Printf("%s: Failed to send club-only message: %v", utils.GetCurrentTypeName(), err)

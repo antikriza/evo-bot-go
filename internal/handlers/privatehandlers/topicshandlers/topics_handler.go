@@ -93,20 +93,20 @@ func (h *topicsHandler) startTopics(b *gotgbot.Bot, ctx *ext.Context) error {
 	// Get last actual events to show for selection
 	events, err := h.eventRepository.GetLastActualEvents(10)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Ошибка при получении списка мероприятий.", nil)
+		h.messageSenderService.Reply(msg, "Error retrieving the list of events.", nil)
 		log.Printf("%s: Error during events retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	if len(events) == 0 {
-		h.messageSenderService.Reply(msg, "Нет доступных мероприятий для просмотра тем и вопросов.", nil)
+		h.messageSenderService.Reply(msg, "No events available for viewing topics and questions.", nil)
 		return handlers.EndConversation()
 	}
 
 	// Format and display event list for selection
 	formattedEvents := formatters.FormatEventListForTopicsView(
 		events,
-		fmt.Sprintf("Выбери ID мероприятия, для которого ты хочешь увидеть темы и вопросы"),
+		fmt.Sprintf("Select the event ID for which you want to see topics and questions"),
 	)
 
 	sentMsg, _ := h.messageSenderService.ReplyMarkdownWithReturnMessage(
@@ -131,7 +131,7 @@ func (h *topicsHandler) handleEventSelection(b *gotgbot.Bot, ctx *ext.Context) e
 	if err != nil {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Пожалуйста, отправь корректный ID мероприятия или используй /%s для отмены.", constants.CancelCommand),
+			fmt.Sprintf("Please send a valid event ID or use /%s to cancel.", constants.CancelCommand),
 			nil,
 		)
 		return nil // Stay in the same state
@@ -142,7 +142,7 @@ func (h *topicsHandler) handleEventSelection(b *gotgbot.Bot, ctx *ext.Context) e
 	if err != nil {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Не удалось найти мероприятие с ID %d. Пожалуйста, проверь ID.", eventID),
+			fmt.Sprintf("Could not find an event with ID %d. Please check the ID.", eventID),
 			nil,
 		)
 		log.Printf("%s: Error during event retrieval: %v", utils.GetCurrentTypeName(), err)
@@ -152,7 +152,7 @@ func (h *topicsHandler) handleEventSelection(b *gotgbot.Bot, ctx *ext.Context) e
 	// Get topics for this event
 	topics, err := h.topicRepository.GetTopicsByEventID(eventID)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Ошибка при получении тем и вопросов для выбранного мероприятия.", nil)
+		h.messageSenderService.Reply(msg, "Error retrieving topics and questions for the selected event.", nil)
 		log.Printf("%s: Error during topics retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -186,10 +186,10 @@ func (h *topicsHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) error {
 		// Call the cancel function to stop any ongoing API calls
 		if cf, ok := cancelFunc.(context.CancelFunc); ok {
 			cf()
-			h.messageSenderService.Reply(msg, "Операция просмотра тем отменена.", nil)
+			h.messageSenderService.Reply(msg, "Topic viewing operation cancelled.", nil)
 		}
 	} else {
-		h.messageSenderService.Reply(msg, "Операция просмотра тем отменена.", nil)
+		h.messageSenderService.Reply(msg, "Topic viewing operation cancelled.", nil)
 	}
 
 	h.MessageRemoveInlineKeyboard(b, &ctx.EffectiveUser.Id)

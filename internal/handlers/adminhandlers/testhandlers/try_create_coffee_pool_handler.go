@@ -26,7 +26,7 @@ const (
 	tryCreateCoffeePoolCtxDataKeyPreviousChatID    = "try_create_coffee_pool_ctx_data_previous_chat_id"
 
 	// Menu headers
-	tryCreateCoffeePoolMenuHeader = "Запуск опроса по кофейным встречам"
+	tryCreateCoffeePoolMenuHeader = "Launch Coffee Meetings Poll"
 )
 
 type tryCreateCoffeePoolHandler struct {
@@ -99,9 +99,9 @@ func (h *tryCreateCoffeePoolHandler) showConfirmationMenu(b *gotgbot.Bot, msg *g
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", tryCreateCoffeePoolMenuHeader)+
-			"\n\n⚠️ ЭТА КОМАНДА НУЖНА ДЛЯ ТЕСТИРОВАНИЯ ФУНКЦИОНАЛА!"+
-			"\n\nВы уверены, что хотите запустить новый опрос по кофейным встречам?"+
-			fmt.Sprintf("\n\nОпрос будет отправлен в топик \"Random Coffee\" (ID: %d).", h.config.RandomCoffeeTopicID),
+			"\n\n⚠️ THIS COMMAND IS FOR TESTING PURPOSES ONLY!"+
+			"\n\nAre you sure you want to launch a new coffee meetings poll?"+
+			fmt.Sprintf("\n\nThe poll will be sent to the \"Random Coffee\" topic (ID: %d).", h.config.RandomCoffeeTopicID),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ConfirmAndCancelButton(
 				constants.TryCreateCoffeePoolConfirmCallback,
@@ -117,7 +117,7 @@ func (h *tryCreateCoffeePoolHandler) showConfirmationMenu(b *gotgbot.Bot, msg *g
 	return handlers.NextConversationState(tryCreateCoffeePoolStateAwaitConfirmation)
 }
 
-// Handle the "Да" (Confirm) button click
+// Handle the "Confirm" button click
 func (h *tryCreateCoffeePoolHandler) handleConfirmCallback(b *gotgbot.Bot, ctx *ext.Context) error {
 	msg := ctx.EffectiveMessage
 	userId := ctx.EffectiveUser.Id
@@ -128,7 +128,7 @@ func (h *tryCreateCoffeePoolHandler) handleConfirmCallback(b *gotgbot.Bot, ctx *
 	processingMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", tryCreateCoffeePoolMenuHeader)+
-			"\n\n⏳ Создание опроса...",
+			"\n\n⏳ Creating poll...",
 		nil)
 
 	if err != nil {
@@ -141,7 +141,7 @@ func (h *tryCreateCoffeePoolHandler) handleConfirmCallback(b *gotgbot.Bot, ctx *
 		// Update message with error
 		_, _, editErr := b.EditMessageText(
 			fmt.Sprintf("<b>%s</b>", tryCreateCoffeePoolMenuHeader)+
-				"\n\n❌ Ошибка при создании опроса:"+
+				"\n\n❌ Error creating poll:"+
 				fmt.Sprintf("\n<code>%s</code>", err.Error()),
 			&gotgbot.EditMessageTextOpts{
 				ChatId:    msg.Chat.Id,
@@ -157,7 +157,7 @@ func (h *tryCreateCoffeePoolHandler) handleConfirmCallback(b *gotgbot.Bot, ctx *
 	// Update message with success
 	_, _, err = b.EditMessageText(
 		fmt.Sprintf("<b>%s</b>", tryCreateCoffeePoolMenuHeader)+
-			"\n\n✅ Опрос по кофейным встречам успешно создан и отправлен в группу!",
+			"\n\n✅ Coffee meetings poll successfully created and sent to the group!",
 		&gotgbot.EditMessageTextOpts{
 			ChatId:    msg.Chat.Id,
 			MessageId: processingMsg.MessageId,
@@ -172,7 +172,7 @@ func (h *tryCreateCoffeePoolHandler) handleConfirmCallback(b *gotgbot.Bot, ctx *
 	return handlers.EndConversation()
 }
 
-// Handle the "Нет" (Cancel) button click
+// Handle the "Cancel" button click
 func (h *tryCreateCoffeePoolHandler) handleCancelCallback(b *gotgbot.Bot, ctx *ext.Context) error {
 	return h.handleCancel(b, ctx)
 }
@@ -184,7 +184,7 @@ func (h *tryCreateCoffeePoolHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Conte
 	h.RemovePreviousMessage(b, &userId)
 	err := h.messageSenderService.Send(
 		msg.Chat.Id,
-		"Создание опроса по кофейным встречам отменено.",
+		"Coffee meetings poll creation canceled.",
 		nil)
 	if err != nil {
 		return fmt.Errorf("%s: failed to send cancel message: %w", utils.GetCurrentTypeName(), err)

@@ -11,19 +11,19 @@ func ProfileMainButtons() gotgbot.InlineKeyboardMarkup {
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "✏️ Редактировать",
+					Text:         "\u270f\ufe0f Edit",
 					CallbackData: constants.ProfileEditMyProfileCallback,
 				},
 			},
 			{
 				{
-					Text:         "🔎 Поиск профиля по имени/нику",
+					Text:         "\U0001f50e Search profile by name/username",
 					CallbackData: constants.ProfileSearchProfileCallback,
 				},
 			},
 			{
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.ProfileFullCancel,
 				},
 			},
@@ -36,15 +36,15 @@ func ProfileEditBackCancelButtons(backCallbackData string) gotgbot.InlineKeyboar
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "◀️ Назад",
+					Text:         "\u25c0\ufe0f Back",
 					CallbackData: backCallbackData,
 				},
 				{
-					Text:         "✏️ Редактировать",
+					Text:         "\u270f\ufe0f Edit",
 					CallbackData: constants.ProfileEditMyProfileCallback,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.ProfileFullCancel,
 				},
 			},
@@ -57,11 +57,11 @@ func ProfileBackCancelButtons(backCallbackData string) gotgbot.InlineKeyboardMar
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "◀️ Назад",
+					Text:         "\u25c0\ufe0f Back",
 					CallbackData: backCallbackData,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: constants.ProfileFullCancel,
 				},
 			},
@@ -73,25 +73,25 @@ func ProfileEditButtons(backCallbackData string) gotgbot.InlineKeyboardMarkup {
 	buttons := [][]gotgbot.InlineKeyboardButton{
 		{
 			{
-				Text:         "👤 Имя",
+				Text:         "\U0001f464 First Name",
 				CallbackData: constants.ProfileEditFirstnameCallback,
 			},
 			{
-				Text:         "👤 Фамилия",
+				Text:         "\U0001f464 Last Name",
 				CallbackData: constants.ProfileEditLastnameCallback,
 			},
 			{
-				Text:         "📝 Био",
+				Text:         "\U0001f4dd Bio",
 				CallbackData: constants.ProfileEditBioCallback,
 			},
 		},
 		{
 			{
-				Text:         "◀️ Назад",
+				Text:         "\u25c0\ufe0f Back",
 				CallbackData: backCallbackData,
 			},
 			{
-				Text:         "❌ Отмена",
+				Text:         "\u274c Cancel",
 				CallbackData: constants.ProfileFullCancel,
 			},
 		},

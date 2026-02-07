@@ -252,10 +252,10 @@ func (s *MessageSenderService) ReplyWithCleanupAfterDelayWithPing(
 	greetings := []string{
 		"Ping!",
 		"Hi!",
-		"Ку!",
-		"Приветы!",
-		"Дзень добры!",
-		"Пинг!",
+		"Hey!",
+		"Hello!",
+		"Howdy!",
+		"Hi there!",
 	}
 	randomGreeting := greetings[rand.Intn(len(greetings))]
 	_, err = s.bot.SendMessage(msg.From.Id, randomGreeting, nil)

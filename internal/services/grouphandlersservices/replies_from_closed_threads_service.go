@@ -103,14 +103,14 @@ func (h *RepliesFromClosedThreadsService) forwardReplyMessage(ctx *ext.Context) 
 	prefixText, postfixText := "", ""
 	if groupTopic != nil && groupTopic.Name != "" {
 		prefixText = fmt.Sprintf(
-			"↩️ oтвет @%s на сообщение в канале",
+			"↩️ reply by @%s to a message in channel",
 			msg.From.Username)
 		postfixText = fmt.Sprintf("\"%s\"", groupTopic.Name)
 	} else {
 		prefixText = fmt.Sprintf(
-			"↩️ oтвет @%s на",
+			"↩️ reply by @%s to a",
 			msg.From.Username)
-		postfixText = "сообщение"
+		postfixText = "message"
 	}
 
 	prefixLength := utf8.RuneCountInString(prefixText)

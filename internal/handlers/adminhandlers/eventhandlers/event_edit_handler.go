@@ -117,19 +117,19 @@ func (h *eventEditHandler) startEdit(b *gotgbot.Bot, ctx *ext.Context) error {
 	// Get a list of the last N events
 	events, err := h.eventRepository.GetLastEvents(constants.EventEditGetLastLimit)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при получении списка мероприятий.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while retrieving the list of events.", nil)
 		log.Printf("%s: Error during event retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	if len(events) == 0 {
-		h.messageSenderService.Reply(msg, "Нет созданных мероприятий для редактирования.", nil)
+		h.messageSenderService.Reply(msg, "No events available for editing.", nil)
 		return handlers.EndConversation()
 	}
 
 	// Create a list of events to display
-	title := fmt.Sprintf("Последние %d мероприятия:", len(events))
-	actionDescription := "которое ты хочешь отредактировать"
+	title := fmt.Sprintf("Last %d events:", len(events))
+	actionDescription := "that you want to edit"
 	formattedResponse := formatters.FormatEventListForAdmin(events, title, constants.CancelCommand, actionDescription)
 
 	sentMsg, _ := h.messageSenderService.ReplyMarkdownWithReturnMessage(
@@ -151,7 +151,7 @@ func (h *eventEditHandler) handleSelectEvent(b *gotgbot.Bot, ctx *ext.Context) e
 
 	eventID, err := strconv.Atoi(eventIDStr)
 	if err != nil {
-		h.messageSenderService.Reply(msg, fmt.Sprintf("Неверный ID. Пожалуйста, введи числовой ID или используй кнопку для отмены."), nil)
+		h.messageSenderService.Reply(msg, fmt.Sprintf("Invalid ID. Please enter a numeric ID or use the cancel button."), nil)
 		return nil // Stay in the same state
 	}
 
@@ -161,7 +161,7 @@ func (h *eventEditHandler) handleSelectEvent(b *gotgbot.Bot, ctx *ext.Context) e
 		log.Printf("%s: Error checking content with ID %d: %v", utils.GetCurrentTypeName(), eventID, err)
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Мероприятие с ID %d не найдено. Пожалуйста, введи существующий ID или используй кнопку для отмены.", eventID),
+			fmt.Sprintf("Event with ID %d not found. Please enter an existing ID or use the cancel button.", eventID),
 			nil,
 		)
 		return nil // Stay in the same state
@@ -175,7 +175,7 @@ func (h *eventEditHandler) handleSelectEvent(b *gotgbot.Bot, ctx *ext.Context) e
 	// Ask what the user wants to edit
 	sentMsg, _ := h.messageSenderService.ReplyWithReturnMessage(
 		msg,
-		fmt.Sprintf("Что ты хочешь отредактировать?\n/1. Название\n/2. Дату начала\n/3. Тип\n\nВведи номер:"),
+		fmt.Sprintf("What do you want to edit?\n/1. Name\n/2. Start date\n/3. Type\n\nEnter a number:"),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.CancelButton(eventEditCallbackConfirmCancel),
 		},
@@ -194,7 +194,7 @@ func (h *eventEditHandler) handleSelectEditType(b *gotgbot.Bot, ctx *ext.Context
 	eventIDVal, ok := h.userStore.Get(ctx.EffectiveUser.Id, eventEditCtxDataKeySelectedEventID)
 	if !ok {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла ошибка при получении выбранного мероприятия. Пожалуйста, начни заново с /%s",
+			"An error occurred while retrieving the selected event. Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -203,7 +203,7 @@ func (h *eventEditHandler) handleSelectEditType(b *gotgbot.Bot, ctx *ext.Context
 	eventID, ok := eventIDVal.(int)
 	if !ok {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла внутренняя ошибка (неверный тип ID). Пожалуйста, начни заново с /%s",
+			"An internal error occurred (invalid ID type). Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -212,7 +212,7 @@ func (h *eventEditHandler) handleSelectEditType(b *gotgbot.Bot, ctx *ext.Context
 	// Get the event details
 	event, err := h.eventRepository.GetEventByID(eventID)
 	if err != nil {
-		h.messageSenderService.Reply(msg, fmt.Sprintf("Ошибка при получении мероприятия с ID %d", eventID), nil)
+		h.messageSenderService.Reply(msg, fmt.Sprintf("Error retrieving event with ID %d", eventID), nil)
 		log.Printf("%s: Error during event retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -221,7 +221,7 @@ func (h *eventEditHandler) handleSelectEditType(b *gotgbot.Bot, ctx *ext.Context
 	selection, err := strconv.Atoi(selectionText)
 	if err != nil || selection < 1 || selection > 3 {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Неверный выбор. Пожалуйста, введи число от 1 до 3, или используй кнопку для отмены",
+			"Invalid selection. Please enter a number from 1 to 3, or use the cancel button",
 		), nil)
 		return nil // Stay in the same state
 	}
@@ -236,7 +236,7 @@ func (h *eventEditHandler) handleSelectEditType(b *gotgbot.Bot, ctx *ext.Context
 	case 1:
 		editType = eventEditTypeName
 		nextState = eventEditStateEditName
-		message = fmt.Sprintf("Текущее название: *%s*\n\nВведи новое название:", event.Name)
+		message = fmt.Sprintf("Current name: *%s*\n\nEnter a new name:", event.Name)
 	case 2:
 		editType = eventEditTypeStartDate
 		nextState = eventEditStateEditStartedAt
@@ -244,10 +244,10 @@ func (h *eventEditHandler) handleSelectEditType(b *gotgbot.Bot, ctx *ext.Context
 		if event.StartedAt != nil {
 			currentStartedAt = event.StartedAt.Format("02.01.2006 15:04")
 		} else {
-			currentStartedAt = "не задана"
+			currentStartedAt = "not set"
 		}
 		message = fmt.Sprintf(
-			"Текущая дата старта: `%s` (UTC)\nВведи новую дату и время в формате DD.MM.YYYY HH:MM (UTC):",
+			"Current start date: `%s` (UTC)\nEnter a new date and time in DD.MM.YYYY HH:MM format (UTC):",
 			currentStartedAt,
 		)
 	case 3:
@@ -261,7 +261,7 @@ func (h *eventEditHandler) handleSelectEditType(b *gotgbot.Bot, ctx *ext.Context
 		}
 
 		message = fmt.Sprintf(
-			"Текущий тип: *%s*\n\nДоступные типы:\n%s\nВведи новый тип или его номер:",
+			"Current type: *%s*\n\nAvailable types:\n%s\nEnter a new type or its number:",
 			event.Type, availableTypes,
 		)
 	}
@@ -289,7 +289,7 @@ func (h *eventEditHandler) handleEditName(b *gotgbot.Bot, ctx *ext.Context) erro
 
 	if newName == "" {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Название не может быть пустым. Пожалуйста, введи новое название или используй кнопку для отмены:",
+			"Name cannot be empty. Please enter a new name or use the cancel button:",
 		), nil)
 		return nil // Stay in the same state
 	}
@@ -300,7 +300,7 @@ func (h *eventEditHandler) handleEditName(b *gotgbot.Bot, ctx *ext.Context) erro
 	eventIDVal, ok := h.userStore.Get(ctx.EffectiveUser.Id, eventEditCtxDataKeySelectedEventID)
 	if !ok {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла ошибка при получении выбранного мероприятия. Пожалуйста, начни заново с /%s",
+			"An error occurred while retrieving the selected event. Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -310,7 +310,7 @@ func (h *eventEditHandler) handleEditName(b *gotgbot.Bot, ctx *ext.Context) erro
 	if !ok {
 		log.Println("Invalid event ID type:", eventIDVal)
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла внутренняя ошибка (неверный тип ID). Пожалуйста, начни заново с /%s",
+			"An internal error occurred (invalid ID type). Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -319,7 +319,7 @@ func (h *eventEditHandler) handleEditName(b *gotgbot.Bot, ctx *ext.Context) erro
 	// Update the event name
 	err := h.eventRepository.UpdateEventName(eventID, newName)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при обновлении названия мероприятия.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while updating the event name.", nil)
 		log.Printf("%s: Error during event update: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -328,7 +328,7 @@ func (h *eventEditHandler) handleEditName(b *gotgbot.Bot, ctx *ext.Context) erro
 	h.messageSenderService.ReplyMarkdown(
 		msg,
 		fmt.Sprintf(
-			"Название мероприятия с ID `%d` успешно обновлено на *\"%s\"* \n\nДля продолжения редактирования мероприятия используй команду /%s.\nДля просмотра всех команд используй команду /%s",
+			"Event name with ID `%d` successfully updated to *\"%s\"* \n\nTo continue editing the event, use the /%s command.\nTo view all commands, use /%s",
 			eventID, newName, constants.EventEditCommand, constants.HelpCommand,
 		),
 		nil,
@@ -349,7 +349,7 @@ func (h *eventEditHandler) handleEditStartedAt(b *gotgbot.Bot, ctx *ext.Context)
 	startedAt, err := time.Parse("02.01.2006 15:04", dateTimeStr)
 	if err != nil {
 		h.messageSenderService.ReplyMarkdown(msg, fmt.Sprintf(
-			"Неверный формат даты. Пожалуйста, введи дату и время в формате *DD.MM.YYYY HH:MM* (UTC) или используй кнопку для отмены.",
+			"Invalid date format. Please enter date and time in *DD.MM.YYYY HH:MM* format (UTC) or use the cancel button.",
 		), nil)
 		return nil // Stay in the same state
 	}
@@ -360,7 +360,7 @@ func (h *eventEditHandler) handleEditStartedAt(b *gotgbot.Bot, ctx *ext.Context)
 	eventIDVal, ok := h.userStore.Get(ctx.EffectiveUser.Id, eventEditCtxDataKeySelectedEventID)
 	if !ok {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла ошибка при получении выбранного мероприятия. Пожалуйста, начни заново с /%s",
+			"An error occurred while retrieving the selected event. Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -370,7 +370,7 @@ func (h *eventEditHandler) handleEditStartedAt(b *gotgbot.Bot, ctx *ext.Context)
 	if !ok {
 		log.Println("Invalid event ID type:", eventIDVal)
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла внутренняя ошибка (неверный тип ID). Пожалуйста, начни заново с /%s",
+			"An internal error occurred (invalid ID type). Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -379,14 +379,14 @@ func (h *eventEditHandler) handleEditStartedAt(b *gotgbot.Bot, ctx *ext.Context)
 	// Update the event start date
 	err = h.eventRepository.UpdateEventStartedAt(eventID, startedAt)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при обновлении даты начала мероприятия.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while updating the event start date.", nil)
 		log.Printf("%s: Error during event update: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	// Confirmation message
 	h.messageSenderService.ReplyMarkdown(msg, fmt.Sprintf(
-		"Дата начала мероприятия с ID %d успешно обновлена на *%s* \n\nДля продолжения редактирования мероприятия используй команду /%s.\nДля просмотра всех команд используй команду /%s",
+		"Event start date with ID %d successfully updated to *%s* \n\nTo continue editing the event, use the /%s command.\nTo view all commands, use /%s",
 		eventID, startedAt.Format("02.01.2006 15:04 UTC"), constants.EventEditCommand, constants.HelpCommand,
 	), nil)
 
@@ -403,7 +403,7 @@ func (h *eventEditHandler) handleEditType(b *gotgbot.Bot, ctx *ext.Context) erro
 
 	if input == "" {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Тип не может быть пустым. Пожалуйста, введи новый тип или его номер, или используй кнопку для отмены:",
+			"Type cannot be empty. Please enter a new type or its number, or use the cancel button:",
 		), nil)
 		return nil // Stay in the same state
 	}
@@ -432,7 +432,7 @@ func (h *eventEditHandler) handleEditType(b *gotgbot.Bot, ctx *ext.Context) erro
 				eventTypesStr = append(eventTypesStr, string(t))
 			}
 			h.messageSenderService.Reply(msg, fmt.Sprintf(
-				"Неверный тип мероприятия. Допустимые типы: %s",
+				"Invalid event type. Allowed types: %s",
 				strings.Join(eventTypesStr, ", "),
 			), nil)
 			return nil // Stay in the same state
@@ -445,7 +445,7 @@ func (h *eventEditHandler) handleEditType(b *gotgbot.Bot, ctx *ext.Context) erro
 	eventIDVal, ok := h.userStore.Get(ctx.EffectiveUser.Id, eventEditCtxDataKeySelectedEventID)
 	if !ok {
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла ошибка при получении выбранного мероприятия. Пожалуйста, начни заново с /%s",
+			"An error occurred while retrieving the selected event. Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -455,7 +455,7 @@ func (h *eventEditHandler) handleEditType(b *gotgbot.Bot, ctx *ext.Context) erro
 	if !ok {
 		log.Println("Invalid event ID type:", eventIDVal)
 		h.messageSenderService.Reply(msg, fmt.Sprintf(
-			"Произошла внутренняя ошибка (неверный тип ID). Пожалуйста, начни заново с /%s",
+			"An internal error occurred (invalid ID type). Please start over with /%s",
 			constants.EventEditCommand,
 		), nil)
 		return handlers.EndConversation()
@@ -464,7 +464,7 @@ func (h *eventEditHandler) handleEditType(b *gotgbot.Bot, ctx *ext.Context) erro
 	// Update the event type
 	err = h.eventRepository.UpdateEventType(eventID, validEventType)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Произошла ошибка при обновлении типа мероприятия.", nil)
+		h.messageSenderService.Reply(msg, "An error occurred while updating the event type.", nil)
 		log.Printf("%s: Error during event update: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -473,7 +473,7 @@ func (h *eventEditHandler) handleEditType(b *gotgbot.Bot, ctx *ext.Context) erro
 	h.messageSenderService.ReplyMarkdown(
 		msg,
 		fmt.Sprintf(
-			"Тип мероприятия с ID %d успешно обновлен на %s *'%s'* \n\nДля продолжения редактирования мероприятия используй команду /%s.\nДля просмотра всех команд используй команду /%s",
+			"Event type with ID %d successfully updated to %s *'%s'* \n\nTo continue editing the event, use the /%s command.\nTo view all commands, use /%s",
 			eventID,
 			formatters.GetTypeEmoji(validEventType),
 			validEventType,
@@ -503,7 +503,7 @@ func (h *eventEditHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) error 
 	msg := ctx.EffectiveMessage
 
 	h.MessageRemoveInlineKeyboard(b, &ctx.EffectiveUser.Id)
-	h.messageSenderService.Reply(msg, "Операция редактирования мероприятия отменена.", nil)
+	h.messageSenderService.Reply(msg, "Event editing operation canceled.", nil)
 
 	// Clean up user data
 	h.userStore.Clear(ctx.EffectiveUser.Id)

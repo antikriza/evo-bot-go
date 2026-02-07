@@ -12,32 +12,32 @@ import (
 func GetTypeEmoji(eventType constants.EventType) string {
 	switch eventType {
 	case constants.EventTypeClubCall:
-		return "💬"
+		return "\U0001f4ac"
 	case constants.EventTypeMeetup:
-		return "🎙"
+		return "\U0001f399"
 	case constants.EventTypeWorkshop:
-		return "⚙️"
+		return "\u2699\ufe0f"
 	case constants.EventTypeReadingClub:
-		return "📚"
+		return "\U0001f4da"
 	case constants.EventTypeConference:
-		return "👥"
+		return "\U0001f465"
 	default:
-		return "🔄"
+		return "\U0001f504"
 	}
 }
 
-func GetTypeInRussian(eventType constants.EventType) string {
+func GetTypeName(eventType constants.EventType) string {
 	switch eventType {
 	case constants.EventTypeClubCall:
-		return "клубный созвон"
+		return "club call"
 	case constants.EventTypeMeetup:
-		return "митап"
+		return "meetup"
 	case constants.EventTypeWorkshop:
-		return "воркшоп"
+		return "workshop"
 	case constants.EventTypeReadingClub:
-		return "книжный клуб"
+		return "reading club"
 	case constants.EventTypeConference:
-		return "конфа"
+		return "conference"
 	default:
 		return string(eventType)
 	}
@@ -46,11 +46,11 @@ func GetTypeInRussian(eventType constants.EventType) string {
 func GetStatusEmoji(status constants.EventStatus) string {
 	switch status {
 	case constants.EventStatusFinished:
-		return "✅"
+		return "\u2705"
 	case constants.EventStatusActual:
-		return "🔄"
+		return "\U0001f504"
 	default:
-		return "🔄"
+		return "\U0001f504"
 	}
 }
 
@@ -60,16 +60,16 @@ func FormatEventListForTopicsView(events []repositories.Event, title string) str
 
 	for _, event := range events {
 		// Handle optional started_at field
-		startedAtStr := "не указано"
+		startedAtStr := "not set"
 		if event.StartedAt != nil && !event.StartedAt.IsZero() {
-			startedAtStr = event.StartedAt.Format("02.01.2006 в 15:04")
+			startedAtStr = event.StartedAt.Format("02.01.2006 at 15:04")
 		}
 
 		typeEmoji := GetTypeEmoji(constants.EventType(event.Type))
-		typeInRussian := GetTypeInRussian(constants.EventType(event.Type))
+		typeName := GetTypeName(constants.EventType(event.Type))
 
-		response.WriteString(fmt.Sprintf("\n%s _%s_: *%s*\n", typeEmoji, typeInRussian, event.Name))
-		response.WriteString(fmt.Sprintf("└   _ID_ /%d, _когда_: %s\n",
+		response.WriteString(fmt.Sprintf("\n%s _%s_: *%s*\n", typeEmoji, typeName, event.Name))
+		response.WriteString(fmt.Sprintf("\u2514   _ID_ /%d, _when_: %s\n",
 			event.ID, startedAtStr))
 	}
 
@@ -82,9 +82,9 @@ func FormatEventListForEventsView(events []repositories.Event, title string) str
 
 	for _, event := range events {
 		// Handle optional started_at field
-		startedAtStr := "не указано"
+		startedAtStr := "not set"
 		if event.StartedAt != nil && !event.StartedAt.IsZero() {
-			startedAtStr = event.StartedAt.Format("02.01.2006 в 15:04 UTC")
+			startedAtStr = event.StartedAt.Format("02.01.2006 at 15:04 UTC")
 
 			// Add time remaining if event is in the future
 			utcNow := time.Now().UTC()
@@ -97,24 +97,24 @@ func FormatEventListForEventsView(events []repositories.Event, title string) str
 					hours := int(timeUntil.Hours())
 					mins := int(timeUntil.Minutes()) % 60
 					if hours > 0 {
-						startedAtStr += fmt.Sprintf(" _(через %dч %dмин)_", hours, mins)
+						startedAtStr += fmt.Sprintf(" _(in %dh %dmin)_", hours, mins)
 					} else {
-						startedAtStr += fmt.Sprintf(" _(через %dмин)_", mins)
+						startedAtStr += fmt.Sprintf(" _(in %dmin)_", mins)
 					}
 				case timeUntil <= 7*24*time.Hour:
 					// Less than 7 days
 					days := int(timeUntil.Hours() / 24)
 					hours := int(timeUntil.Hours()) % 24
-					startedAtStr += fmt.Sprintf(" _(через %dд %dч)_", days, hours)
+					startedAtStr += fmt.Sprintf(" _(in %dd %dh)_", days, hours)
 				}
 			}
 		}
 
 		typeEmoji := GetTypeEmoji(constants.EventType(event.Type))
-		typeInRussian := GetTypeInRussian(constants.EventType(event.Type))
+		typeName := GetTypeName(constants.EventType(event.Type))
 
-		response.WriteString(fmt.Sprintf("\n%s _%s_: *%s*\n", typeEmoji, typeInRussian, event.Name))
-		response.WriteString(fmt.Sprintf("└   _когда_: %s\n", startedAtStr))
+		response.WriteString(fmt.Sprintf("\n%s _%s_: *%s*\n", typeEmoji, typeName, event.Name))
+		response.WriteString(fmt.Sprintf("\u2514   _when_: %s\n", startedAtStr))
 	}
 
 	return response.String()
@@ -126,20 +126,20 @@ func FormatEventListForAdmin(events []repositories.Event, title string, cancelCo
 
 	for _, event := range events {
 		// Handle optional started_at field
-		startedAtStr := "не указано"
+		startedAtStr := "not set"
 		if event.StartedAt != nil && !event.StartedAt.IsZero() {
-			startedAtStr = event.StartedAt.Format("02.01.2006 в 15:04 UTC")
+			startedAtStr = event.StartedAt.Format("02.01.2006 at 15:04 UTC")
 		}
 
 		statusEmoji := GetStatusEmoji(constants.EventStatus(event.Status))
 		typeEmoji := GetTypeEmoji(constants.EventType(event.Type))
 
 		response.WriteString(fmt.Sprintf("\n%s ID /%d: *%s*\n", typeEmoji, event.ID, event.Name))
-		response.WriteString(fmt.Sprintf("└ %s _когда_: *%s*\n",
+		response.WriteString(fmt.Sprintf("\u2514 %s _when_: *%s*\n",
 			statusEmoji, startedAtStr))
 	}
 
-	response.WriteString(fmt.Sprintf("\nПожалуйста, отправь ID мероприятия, %s.", actionDescription))
+	response.WriteString(fmt.Sprintf("\nPlease send the event ID to %s.", actionDescription))
 
 	return response.String()
 }
@@ -148,16 +148,16 @@ func FormatHtmlTopicListForUsers(topics []repositories.Topic, eventName string, 
 	var response strings.Builder
 
 	typeEmoji := GetTypeEmoji(constants.EventType(eventType))
-	typeInRussian := GetTypeInRussian(constants.EventType(eventType))
+	typeName := GetTypeName(constants.EventType(eventType))
 
-	response.WriteString(fmt.Sprintf("\n %s Мероприятие (%s): <b>%s</b>\n", typeEmoji, typeInRussian, eventName))
+	response.WriteString(fmt.Sprintf("\n %s Event (%s): <b>%s</b>\n", typeEmoji, typeName, eventName))
 
 	if len(topics) == 0 {
 		response.WriteString(
-			fmt.Sprintf("\n🔍 Для этого мероприятия пока нет тем и вопросов. \n Используй команду /%s для добавления.", constants.TopicAddCommand))
+			fmt.Sprintf("\n\U0001f50d No topics or questions for this event yet.\n Use /%s to add one.", constants.TopicAddCommand))
 	} else {
 		topicCount := len(topics)
-		response.WriteString(fmt.Sprintf("📋 Найдено тем и вопросов: <b>%d</b>\n\n", topicCount))
+		response.WriteString(fmt.Sprintf("\U0001f4cb Topics and questions found: <b>%d</b>\n\n", topicCount))
 
 		for i, topic := range topics {
 			// Format date as DD.MM.YYYY for better readability
@@ -176,7 +176,7 @@ func FormatHtmlTopicListForUsers(topics []repositories.Topic, eventName string, 
 
 		response.WriteString(
 			fmt.Sprintf(
-				"\nИспользуй команду /%s для добавления новых тем и вопросов, либо /%s для просмотра тем и вопросов к другому мероприятию.",
+				"\nUse /%s to add new topics and questions, or /%s to view topics for another event.",
 				constants.TopicAddCommand,
 				constants.TopicsCommand,
 			),
@@ -190,15 +190,15 @@ func FormatHtmlTopicListForAdmin(topics []repositories.Topic, eventName string, 
 	var response strings.Builder
 
 	typeEmoji := GetTypeEmoji(constants.EventType(eventType))
-	typeInRussian := GetTypeInRussian(constants.EventType(eventType))
+	typeName := GetTypeName(constants.EventType(eventType))
 
-	response.WriteString(fmt.Sprintf("\n %s <i>Мероприятие (%s):</i> %s\n\n", typeEmoji, typeInRussian, eventName))
+	response.WriteString(fmt.Sprintf("\n %s <i>Event (%s):</i> %s\n\n", typeEmoji, typeName, eventName))
 
 	if len(topics) == 0 {
-		response.WriteString("Для этого мероприятия пока нет тем и вопросов.")
+		response.WriteString("No topics or questions for this event yet.")
 	} else {
 		for _, topic := range topics {
-			userNickname := "не указано"
+			userNickname := "not specified"
 			if topic.UserNickname != nil {
 				userNickname = "@" + *topic.UserNickname
 			}

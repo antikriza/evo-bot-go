@@ -54,24 +54,24 @@ func (h *eventsHandler) handleCommand(b *gotgbot.Bot, ctx *ext.Context) error {
 	// Get actual events to show
 	events, err := h.eventRepository.GetLastActualEvents(10) // Fetch last 10 actual events
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Ошибка при получении списка мероприятий.", nil)
+		h.messageSenderService.Reply(msg, "Error retrieving the list of events.", nil)
 		log.Printf("%s: Error during events retrieval: %v", utils.GetCurrentTypeName(), err)
 		return nil
 	}
 
 	if len(events) == 0 {
-		h.messageSenderService.Reply(msg, "На данный момент нет актуальных мероприятий.", nil)
+		h.messageSenderService.Reply(msg, "There are no upcoming events at the moment.", nil)
 		return nil
 	}
 
 	// Format and display event list
 	formattedEvents := formatters.FormatEventListForEventsView(
 		events,
-		"📋 Список ближайших мероприятий",
+		"📋 Upcoming Events",
 	)
-	formattedEvents += fmt.Sprintf("\nДобавить темы и вопросы /%s. ", constants.TopicAddCommand)
-	formattedEvents += fmt.Sprintf("Просмотреть темы и вопросы /%s. ", constants.TopicsCommand)
-	formattedEvents += "Больше информации о мероприятиях смотри в [клубном календаре](https://itbeard.com/s/evo-calendar)."
+	formattedEvents += fmt.Sprintf("\nAdd topics and questions /%s. ", constants.TopicAddCommand)
+	formattedEvents += fmt.Sprintf("View topics and questions /%s. ", constants.TopicsCommand)
+	formattedEvents += "For more event information, check the group for updates."
 	h.messageSenderService.ReplyMarkdown(msg, formattedEvents, nil)
 
 	return nil

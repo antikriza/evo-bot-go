@@ -12,7 +12,7 @@ import (
 // Format a readable view of a user profile
 func FormatProfileView(user *repositories.User, profile *repositories.Profile, showScore bool) string {
 	if profile == nil {
-		return "Твой профиль не найден.\n\nСоздай профиль через кнопку \"Редактировать мой профиль\"."
+		return "Your profile was not found.\n\nCreate a profile using the \"Edit my profile\" button."
 	}
 
 	// Format username
@@ -28,16 +28,16 @@ func FormatProfileView(user *repositories.User, profile *repositories.Profile, s
 	}
 
 	// Build profile text
-	text := fmt.Sprintf("🖐 %s %s\n", fullName, username)
+	text := fmt.Sprintf("\U0001f590 %s %s\n", fullName, username)
 
 	if profile.Bio != "" {
 		profile.Bio = strings.ReplaceAll(profile.Bio, "<", "&lt;")
 		profile.Bio = strings.ReplaceAll(profile.Bio, ">", "&gt;")
-		text += fmt.Sprintf("\n<blockquote>О себе</blockquote>\n%s\n", profile.Bio)
+		text += fmt.Sprintf("\n<blockquote>About</blockquote>\n%s\n", profile.Bio)
 	}
 
 	if showScore && user.Score > 100 {
-		text += fmt.Sprintf("\n<b>%d</b> <i>(что это? хм...)</i>\n", user.Score)
+		text += fmt.Sprintf("\n<b>%d</b> <i>(what's this? hmm...)</i>\n", user.Score)
 	}
 
 	return text
@@ -59,25 +59,25 @@ func FormatProfileManagerView(user *repositories.User, profile *repositories.Pro
 	}
 
 	// Build profile text
-	text := fmt.Sprintf("🖐 %s %s\n", fullName, username)
+	text := fmt.Sprintf("\U0001f590 %s %s\n", fullName, username)
 
 	if profile.Bio != "" {
-		text += "\n<i>О себе:</i>"
+		text += "\n<i>About:</i>"
 		profile.Bio = strings.ReplaceAll(profile.Bio, "<", "&lt;")
 		profile.Bio = strings.ReplaceAll(profile.Bio, ">", "&gt;")
 		text += fmt.Sprintf("<blockquote expandable>%s</blockquote>", profile.Bio)
 	}
-	text += fmt.Sprintf("\n\n<i>Карма:</i> <b>%d</b>", user.Score)
+	text += fmt.Sprintf("\n\n<i>Score:</i> <b>%d</b>", user.Score)
 
-	coffeeBanStatus := "✅ Разрешено"
+	coffeeBanStatus := "\u2705 Allowed"
 	if hasCoffeeBan {
-		coffeeBanStatus = "❌ Запрещено"
+		coffeeBanStatus = "\u274c Banned"
 	}
-	text += fmt.Sprintf("\n<i>Кофейные встречи:</i> %s", coffeeBanStatus)
+	text += fmt.Sprintf("\n<i>Coffee meetings:</i> %s", coffeeBanStatus)
 	text += fmt.Sprintf("\n<i>Telegram ID:</i> <code>%d</code>", user.TgID)
 	if profile.PublishedMessageID.Valid {
 		linkToPost := utils.GetIntroMessageLink(config, profile.PublishedMessageID.Int64)
-		text += fmt.Sprintf("\n<i>Ссылка на профиль:</i> %s", linkToPost)
+		text += fmt.Sprintf("\n<i>Profile link:</i> %s", linkToPost)
 	}
 	return text
 }
@@ -97,13 +97,13 @@ func FormatPublicProfileForMessage(user *repositories.User, profile *repositorie
 	}
 
 	// Build profile text
-	text := fmt.Sprintf("🖐 %s %s\n", fullName, username)
+	text := fmt.Sprintf("\U0001f590 %s %s\n", fullName, username)
 
 	if profile.Bio != "" {
 
 		profile.Bio = strings.ReplaceAll(profile.Bio, "<", "&lt;")
 		profile.Bio = strings.ReplaceAll(profile.Bio, ">", "&gt;")
-		text += fmt.Sprintf("\n<blockquote>О себе</blockquote>\n%s\n", profile.Bio)
+		text += fmt.Sprintf("\n<blockquote>About</blockquote>\n%s\n", profile.Bio)
 	}
 
 	return text

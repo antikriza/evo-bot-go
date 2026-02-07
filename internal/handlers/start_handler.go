@@ -62,29 +62,35 @@ func (h *startHandler) handleStart(b *gotgbot.Bot, ctx *ext.Context) error {
 		userName = user.FirstName
 	}
 
-	greeting := "Приветствую"
+	greeting := "Welcome"
 	if userName != "" {
 		greeting += ", *" + userName + "*"
 	}
-	greeting += "! 🎩"
+	greeting += "! 🎓"
 
-	// Check if user is a member of the club
-	isClubMember := utils.IsUserClubMember(b, user.Id, h.config)
+	// Check if user is a member of the group
+	isGroupMember := utils.IsUserClubMember(b, user.Id, h.config)
 
 	var message string
 	var inlineKeyboard gotgbot.InlineKeyboardMarkup
-	if isClubMember {
-		// Message for club members
+	if isGroupMember {
+		// Message for group members
 		message = greeting + "\n\n" +
-			"Я — *Дженкинс Вебстер*, потомственный дворецкий и верный помощник клуба _\"Эволюция Кода\"_ 🧐\n\n" +
-			"Рад видеть тебя среди участников нашего клуба! Я готов помочь тебе во всех твоих начинаниях. 🤵"
+			"I'm the *AI & Programming Course Bot* — your assistant for learning AI, discovering tools, and connecting with fellow learners. 🤖\n\n" +
+			"Use /help to see what I can do for you!"
 
 		inlineKeyboard = gotgbot.InlineKeyboardMarkup{
 			InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 				{
 					{
-						Text:         "💡 Как пользоваться ботом?",
+						Text:         "📋 Show commands",
 						CallbackData: startHandlerCallbackHelp,
+					},
+				},
+				{
+					{
+						Text: "📖 Open AI Course",
+						Url:  "https://antikriza.github.io/BBD-evolution-code-clone/telegram-archive/course/twa/index.html",
 					},
 				},
 			},
@@ -92,16 +98,15 @@ func (h *startHandler) handleStart(b *gotgbot.Bot, ctx *ext.Context) error {
 	} else {
 		// Message for non-members
 		message = greeting + "\n\n" +
-			"Я — *Дженкинс Вебстер*, потомственный дворецкий и верный помощник клуба _\"Эволюция Кода\"_ 🧐\n\n" +
-			"Позвольте предложить тебе присоединиться к нашему изысканному сообществу разработчиков и разработчиц, " +
-			"где я буду рад служить тебе всеми своими возможностями и ресурсами."
+			"I'm the *AI & Programming Course Bot*. 🤖\n\n" +
+			"Join our community to access AI tools search, daily summaries, member profiles, and a structured AI course with 42 topics!"
 
 		inlineKeyboard = gotgbot.InlineKeyboardMarkup{
 			InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 				{
 					{
-						Text: "💡 Жду тебя в клубе!",
-						Url:  "https://web.tribute.tg/l/ge",
+						Text:         "📋 Show commands",
+						CallbackData: startHandlerCallbackHelp,
 					},
 				},
 			},

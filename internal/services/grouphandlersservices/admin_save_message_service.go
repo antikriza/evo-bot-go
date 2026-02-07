@@ -82,7 +82,7 @@ func (h *AdminSaveMessageService) handleUpdateCommand(adminMsg *gotgbot.Message,
 			utils.GetCurrentTypeName(), repliedMessage.MessageId, err)
 
 		// Reply to admin with error
-		_, replyErr := h.messageSenderService.SendWithReturnMessage(h.getAdminUserID(adminMsg), "❌ Не удалось обновить сообщение в базе данных.", nil)
+		_, replyErr := h.messageSenderService.SendWithReturnMessage(h.getAdminUserID(adminMsg), "\u274c Failed to update message in database.", nil)
 		if replyErr != nil {
 			log.Printf("%s: Failed to reply to admin: %v", utils.GetCurrentTypeName(), replyErr)
 		}
@@ -100,7 +100,7 @@ func (h *AdminSaveMessageService) handleUpdateCommand(adminMsg *gotgbot.Message,
 	}()
 
 	// Send success message to admin DM
-	_, err = h.messageSenderService.SendWithReturnMessage(h.getAdminUserID(adminMsg), "✅ Сообщение успешно добавлено/обновлено в базе данных.", nil)
+	_, err = h.messageSenderService.SendWithReturnMessage(h.getAdminUserID(adminMsg), "\u2705 Message successfully added/updated in database.", nil)
 	if err != nil {
 		log.Printf("%s: Failed to reply to admin: %v", utils.GetCurrentTypeName(), err)
 	}
@@ -128,7 +128,7 @@ func (h *AdminSaveMessageService) handleDeleteCommand(adminMsg *gotgbot.Message,
 	}()
 
 	// Send success message to admin DM
-	_, err = h.messageSenderService.SendWithReturnMessage(h.getAdminUserID(adminMsg), "✅ Сообщение успешно удалено из базы данных.", nil)
+	_, err = h.messageSenderService.SendWithReturnMessage(h.getAdminUserID(adminMsg), "\u2705 Message successfully deleted from database.", nil)
 	if err != nil {
 		log.Printf("%s: Failed to send success message to admin: %v", utils.GetCurrentTypeName(), err)
 	}

@@ -26,7 +26,7 @@ const (
 	tryGenerateCoffeePairsCtxDataKeyPreviousChatID    = "try_generate_coffee_pairs_ctx_data_previous_chat_id"
 
 	// Menu headers
-	tryGenerateCoffeePairsMenuHeader = "Генерация пар для Random Coffee"
+	tryGenerateCoffeePairsMenuHeader = "Random Coffee Pairs Generation"
 )
 
 type tryGenerateCoffeePairsHandler struct {
@@ -109,28 +109,28 @@ func (h *tryGenerateCoffeePairsHandler) showConfirmationMenu(b *gotgbot.Bot, msg
 	// Get latest poll info to show in confirmation
 	latestPoll, err := h.pollRepo.GetLatestPoll()
 	if err != nil {
-		h.sender.Reply(msg, "Ошибка при получении информации об опросе.", nil)
+		h.sender.Reply(msg, "Error retrieving poll information.", nil)
 		return handlers.EndConversation()
 	}
 	if latestPoll == nil {
-		h.sender.Reply(msg, "Опрос для рандом кофе не найден.", nil)
+		h.sender.Reply(msg, "Random coffee poll not found.", nil)
 		return handlers.EndConversation()
 	}
 
 	participants, err := h.participantRepo.GetParticipatingUsers(latestPoll.ID)
 	if err != nil {
-		h.sender.Reply(msg, "Ошибка при получении списка участников.", nil)
+		h.sender.Reply(msg, "Error retrieving the list of participants.", nil)
 		return handlers.EndConversation()
 	}
 
 	editedMsg, err := h.sender.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", tryGenerateCoffeePairsMenuHeader)+
-			"\n\n⚠️ ЭТА КОМАНДА НУЖНА ДЛЯ ТЕСТИРОВАНИЯ ФУНКЦИОНАЛА!"+
-			"\n\nВы уверены, что хотите сгенерировать пары для текущего опроса?"+
-			fmt.Sprintf("\n\n📊 Опрос: неделя %s", latestPoll.WeekStartDate.Format("2006-01-02"))+
-			fmt.Sprintf("\n👥 Участников: %d", len(participants))+
-			"\n\n⚠️ Пары будут отправлены в сообщество.",
+			"\n\n⚠️ THIS COMMAND IS FOR TESTING PURPOSES ONLY!"+
+			"\n\nAre you sure you want to generate pairs for the current poll?"+
+			fmt.Sprintf("\n\n📊 Poll: week %s", latestPoll.WeekStartDate.Format("2006-01-02"))+
+			fmt.Sprintf("\n👥 Participants: %d", len(participants))+
+			"\n\n⚠️ Pairs will be sent to the community.",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ConfirmAndCancelButton(
 				constants.TryGenerateCoffeePairsConfirmCallback,
@@ -156,7 +156,7 @@ func (h *tryGenerateCoffeePairsHandler) handleConfirmCallback(b *gotgbot.Bot, ct
 	editedMsg, err := h.sender.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", tryGenerateCoffeePairsMenuHeader)+
-			"\n\n⏳ Генерация пар...",
+			"\n\n⏳ Generating pairs...",
 		nil)
 	h.SavePreviousMessageInfo(userId, editedMsg)
 	if err != nil {
@@ -172,9 +172,9 @@ func (h *tryGenerateCoffeePairsHandler) handleConfirmCallback(b *gotgbot.Bot, ct
 		editedMsg, sendErr := h.sender.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", tryGenerateCoffeePairsMenuHeader)+
-				"\n\n❌ Ошибка при генерации пар:"+
+				"\n\n❌ Error generating pairs:"+
 				fmt.Sprintf("\n<code>%s</code>", err.Error())+
-				"\n\nВернуться к подтверждению?",
+				"\n\nReturn to confirmation?",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.BackAndCancelButton(
 					constants.TryGenerateCoffeePairsBackCallback,
@@ -195,7 +195,7 @@ func (h *tryGenerateCoffeePairsHandler) handleConfirmCallback(b *gotgbot.Bot, ct
 	err = h.sender.SendHtml(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", tryGenerateCoffeePairsMenuHeader)+
-			"\n\n✅ Пары успешно сгенерированы и отправлены в супергруппу!",
+			"\n\n✅ Pairs successfully generated and sent to the supergroup!",
 		nil)
 
 	if err != nil {
@@ -224,7 +224,7 @@ func (h *tryGenerateCoffeePairsHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Co
 	h.RemovePreviousMessage(b, &userId)
 	err := h.sender.Send(
 		msg.Chat.Id,
-		"Генерация пар для Random Coffee отменена.",
+		"Random Coffee pairs generation canceled.",
 		nil)
 	if err != nil {
 		return fmt.Errorf("%s: failed to send cancel message: %w", utils.GetCurrentTypeName(), err)

@@ -38,12 +38,12 @@ const (
 	profileCtxDataKeyCancelFunc              = "profile_ctx_data_key_cancel_func"
 
 	// Menu headers
-	profileMenuHeader              = "Меню \"Профиль\""
-	profileMenuEditHeader          = "Профиль → Редактирование"
-	profileMenuEditFirstnameHeader = "Профиль → Редактирование → Имя"
-	profileMenuEditLastnameHeader  = "Профиль → Редактирование → Фамилия"
-	profileMenuEditBioHeader       = "Профиль → Редактирование → О себе"
-	profileMenuSearchHeader        = "Профиль → Поиск"
+	profileMenuHeader              = "Profile Menu"
+	profileMenuEditHeader          = "Profile → Edit"
+	profileMenuEditFirstnameHeader = "Profile → Edit → First Name"
+	profileMenuEditLastnameHeader  = "Profile → Edit → Last Name"
+	profileMenuEditBioHeader       = "Profile → Edit → Bio"
+	profileMenuSearchHeader        = "Profile → Search"
 )
 
 type profileHandler struct {
@@ -136,11 +136,11 @@ func (h *profileHandler) handleCallback(b *gotgbot.Bot, ctx *ext.Context) error 
 	case constants.ProfileSearchProfileCallback:
 		return h.handleSearchProfile(b, ctx, effectiveMsg)
 	case constants.ProfileEditBioCallback:
-		return h.handleEditField(b, ctx, effectiveMsg, fmt.Sprintf("обновлённую биографию (до %d символов)", constants.ProfileBioLengthLimit), profileStateAwaitBio)
+		return h.handleEditField(b, ctx, effectiveMsg, fmt.Sprintf("your updated bio (up to %d characters)", constants.ProfileBioLengthLimit), profileStateAwaitBio)
 	case constants.ProfileEditFirstnameCallback:
-		return h.handleEditField(b, ctx, effectiveMsg, "новое имя", profileStateAwaitFirstname)
+		return h.handleEditField(b, ctx, effectiveMsg, "your new first name", profileStateAwaitFirstname)
 	case constants.ProfileEditLastnameCallback:
-		return h.handleEditField(b, ctx, effectiveMsg, "новую фамилию", profileStateAwaitLastname)
+		return h.handleEditField(b, ctx, effectiveMsg, "your new last name", profileStateAwaitLastname)
 	case constants.ProfileStartCallback:
 		return h.handleStart(b, ctx)
 	}
@@ -163,39 +163,39 @@ func (h *profileHandler) handleStart(b *gotgbot.Bot, ctx *ext.Context) error {
 
 	h.RemovePreviousMessage(b, &user.Id)
 
-	firstNameString := "└ ❌ Имя"
-	lastNameString := "└ ❌ Фамилия"
-	bioString := "└ ❌ Биография"
+	firstNameString := "└ ❌ First Name"
+	lastNameString := "└ ❌ Last Name"
+	bioString := "└ ❌ Bio"
 	profileLinkString := ""
 	dbUser, err := h.userRepository.GetOrCreate(user)
 	if err == nil {
 		if dbUser.Firstname != "" {
-			firstNameString = "└ ✅ Имя" + " <i>(" + dbUser.Firstname + ")</i>"
+			firstNameString = "└ ✅ First Name" + " <i>(" + dbUser.Firstname + ")</i>"
 		}
 		if dbUser.Lastname != "" {
-			lastNameString = "└ ✅ Фамилия" + " <i>(" + dbUser.Lastname + ")</i>"
+			lastNameString = "└ ✅ Last Name" + " <i>(" + dbUser.Lastname + ")</i>"
 		}
 
 		profile, err := h.profileRepository.GetOrCreate(dbUser.ID)
 		if err == nil {
 			if profile.PublishedMessageID.Valid {
-				profileLinkString = fmt.Sprintf("👉 <a href='%s'>Ссылка</a> на твой профиль.",
+				profileLinkString = fmt.Sprintf("👉 <a href='%s'>Link</a> to your profile.",
 					utils.GetIntroMessageLink(h.config, profile.PublishedMessageID.Int64))
 			}
 			if profile != nil {
 				if profile.Bio != "" {
-					bioString = "└ ✅ Биография"
+					bioString = "└ ✅ Bio"
 				}
 			}
 		}
 	}
 
 	showProfileMenuText := fmt.Sprintf("<b>%s</b>", profileMenuHeader) +
-		"\n\nТут ты можешь редактировать свой профиль и искать профили других пользователей по имени/нику." +
-		fmt.Sprintf("\n\n<blockquote>⚠️ Профиль будет автоматически опубликован в канале \"<a href='%s'>Интро</a>\" как только все поля будут заполнены.</blockquote>",
+		"\n\nHere you can edit your profile and search for other members by name or username." +
+		fmt.Sprintf("\n\n<blockquote>⚠️ Your profile will be automatically published in the \"<a href='%s'>Intro</a>\" channel once all fields are filled in.</blockquote>",
 			utils.GetIntroTopicLink(h.config)) +
 		"\n\n" +
-		"Статусы полей:" +
+		"Field statuses:" +
 		"\n" +
 		firstNameString +
 		"\n" +
@@ -227,7 +227,7 @@ func (h *profileHandler) handleEditMyProfile(b *gotgbot.Bot, ctx *ext.Context, m
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", profileMenuEditHeader)+
-			"\n\nВыбери, что бы ты хотел/а изменить:",
+			"\n\nChoose what you would like to change:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfileEditButtons(constants.ProfileStartCallback),
 		})
@@ -247,7 +247,7 @@ func (h *profileHandler) handleSearchProfile(b *gotgbot.Bot, ctx *ext.Context, m
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", profileMenuSearchHeader)+
-			"\n\nВведи телеграм-ник пользователя <i>(с @ или без)</i>, либо его имя и фамилию <i>(через пробел)</i>:",
+			"\n\nEnter the user's Telegram username <i>(with or without @)</i>, or their first and last name <i>(separated by a space)</i>:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileStartCallback),
 		})
@@ -288,8 +288,8 @@ func (h *profileHandler) handleSearchProfileInput(b *gotgbot.Bot, ctx *ext.Conte
 		b.DeleteMessage(msg.Chat.Id, msg.MessageId, nil)
 		editedMsg, err := h.messageSenderService.SendMarkdownWithReturnMessage(msg.Chat.Id,
 			fmt.Sprintf("*%s*", profileMenuSearchHeader)+
-				fmt.Sprintf("\n\nПользователь *%s* не найден.", username)+
-				"\n\nПопробуй ещё раз, прислав мне имя пользователя снова:",
+				fmt.Sprintf("\n\nUser *%s* not found.", username)+
+				"\n\nPlease try again by sending me the username:",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileStartCallback),
 			})
@@ -305,7 +305,7 @@ func (h *profileHandler) handleSearchProfileInput(b *gotgbot.Bot, ctx *ext.Conte
 	profile, err := h.profileRepository.GetOrCreate(dbUser.ID)
 	if err != nil && err != sql.ErrNoRows {
 		_ = h.messageSenderService.Reply(msg,
-			"Произошла ошибка при получении профиля.", nil)
+			"An error occurred while retrieving the profile.", nil)
 		return fmt.Errorf("%s: failed to get profile in handleUsernameInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -349,18 +349,18 @@ func (h *profileHandler) handleEditField(b *gotgbot.Bot, ctx *ext.Context, msg *
 	case profileStateAwaitBio:
 		dbProfile.Bio = strings.ReplaceAll(dbProfile.Bio, "<", "&lt;")
 		dbProfile.Bio = strings.ReplaceAll(dbProfile.Bio, ">", "&gt;")
-		oldFieldValue = "Текущее значение: <pre>" + dbProfile.Bio + "</pre>"
+		oldFieldValue = "Current value: <pre>" + dbProfile.Bio + "</pre>"
 		menuHeader = profileMenuEditBioHeader
 	case profileStateAwaitFirstname:
-		oldFieldValue = "Текущее значение: <code>" + dbUser.Firstname + "</code>"
+		oldFieldValue = "Current value: <code>" + dbUser.Firstname + "</code>"
 		menuHeader = profileMenuEditFirstnameHeader
 	case profileStateAwaitLastname:
-		oldFieldValue = "Текущее значение: <code>" + dbUser.Lastname + "</code>"
+		oldFieldValue = "Current value: <code>" + dbUser.Lastname + "</code>"
 		menuHeader = profileMenuEditLastnameHeader
 	}
 
 	if oldFieldValue == "" || oldFieldValue == " " {
-		oldFieldValue = "отсутствует"
+		oldFieldValue = "not set"
 	}
 
 	h.RemovePreviousMessage(b, &user.Id)
@@ -368,7 +368,7 @@ func (h *profileHandler) handleEditField(b *gotgbot.Bot, ctx *ext.Context, msg *
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", menuHeader)+
 			fmt.Sprintf("\n\n%s", oldFieldValue)+
-			fmt.Sprintf("\n\nВведи %s:", fieldName),
+			fmt.Sprintf("\n\nEnter %s:", fieldName),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileEditMyProfileCallback),
 		})
@@ -404,8 +404,8 @@ func (h *profileHandler) handleBioInput(b *gotgbot.Bot, ctx *ext.Context) error 
 		errMsg, _ := h.messageSenderService.SendMarkdownWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("*%s*", profileMenuEditBioHeader)+
-				fmt.Sprintf("\n\nТекущая длина: %d символов", bioLength)+
-				fmt.Sprintf("\n\nПожалуйста, сократи до %d символов и пришли снова:", constants.ProfileBioLengthLimit),
+				fmt.Sprintf("\n\nCurrent length: %d characters", bioLength)+
+				fmt.Sprintf("\n\nPlease shorten it to %d characters and send again:", constants.ProfileBioLengthLimit),
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileEditMyProfileCallback),
 			})
@@ -418,7 +418,7 @@ func (h *profileHandler) handleBioInput(b *gotgbot.Bot, ctx *ext.Context) error 
 	if err != nil {
 		_ = h.messageSenderService.ReplyMarkdown(msg,
 			fmt.Sprintf("*%s*", profileMenuEditBioHeader)+
-				"\n\nПроизошла ошибка при сохранении биографии.", nil)
+				"\n\nAn error occurred while saving the bio.", nil)
 		return fmt.Errorf("%s: failed to save bio in handleBioInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -429,7 +429,7 @@ func (h *profileHandler) handleBioInput(b *gotgbot.Bot, ctx *ext.Context) error 
 	b.DeleteMessage(msg.Chat.Id, msg.MessageId, nil)
 	sendMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(msg.Chat.Id,
 		fmt.Sprintf("*%s*", profileMenuEditBioHeader)+
-			"\n\n✅ Биография сохранена!"+profilePublishedMessage,
+			"\n\n✅ Bio saved!"+profilePublishedMessage,
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileEditMyProfileCallback),
 		})
@@ -452,7 +452,7 @@ func (h *profileHandler) handleFirstnameInput(b *gotgbot.Bot, ctx *ext.Context) 
 		errMsg, _ := h.messageSenderService.SendMarkdownWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("*%s*", profileMenuEditFirstnameHeader)+
-				"\n\nИмя слишком длинное. Пожалуйста, введи более короткое имя (не более 30 символов):",
+				"\n\nThe first name is too long. Please enter a shorter name (max 30 characters):",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileEditMyProfileCallback),
 			})
@@ -465,7 +465,7 @@ func (h *profileHandler) handleFirstnameInput(b *gotgbot.Bot, ctx *ext.Context) 
 	if err != nil {
 		_ = h.messageSenderService.ReplyMarkdown(msg,
 			fmt.Sprintf("*%s*", profileMenuEditFirstnameHeader)+
-				"\n\nПроизошла ошибка при сохранении имени.", nil)
+				"\n\nAn error occurred while saving the first name.", nil)
 		return fmt.Errorf("%s: failed to save firstname in handleFirstnameInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -477,7 +477,7 @@ func (h *profileHandler) handleFirstnameInput(b *gotgbot.Bot, ctx *ext.Context) 
 	b.DeleteMessage(msg.Chat.Id, msg.MessageId, nil)
 	sendMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(msg.Chat.Id,
 		fmt.Sprintf("*%s*", profileMenuEditFirstnameHeader)+
-			"\n\n✅ Имя сохранено!"+profilePublishedMessage,
+			"\n\n✅ First name saved!"+profilePublishedMessage,
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileEditMyProfileCallback),
 		})
@@ -500,7 +500,7 @@ func (h *profileHandler) handleLastnameInput(b *gotgbot.Bot, ctx *ext.Context) e
 		errMsg, _ := h.messageSenderService.SendMarkdownWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("*%s*", profileMenuEditLastnameHeader)+
-				"\n\nФамилия слишком длинная. Пожалуйста, введи более короткую фамилию (не более 30 символов):",
+				"\n\nThe last name is too long. Please enter a shorter last name (max 30 characters):",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileEditMyProfileCallback),
 			})
@@ -513,7 +513,7 @@ func (h *profileHandler) handleLastnameInput(b *gotgbot.Bot, ctx *ext.Context) e
 	if err != nil {
 		_ = h.messageSenderService.ReplyMarkdown(msg,
 			fmt.Sprintf("*%s*", profileMenuEditLastnameHeader)+
-				"\n\nПроизошла ошибка при сохранении фамилии.", nil)
+				"\n\nAn error occurred while saving the last name.", nil)
 		return fmt.Errorf("%s: failed to save lastname in handleLastnameInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -525,7 +525,7 @@ func (h *profileHandler) handleLastnameInput(b *gotgbot.Bot, ctx *ext.Context) e
 	b.DeleteMessage(msg.Chat.Id, msg.MessageId, nil)
 	sendMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(msg.Chat.Id,
 		fmt.Sprintf("*%s*", profileMenuEditLastnameHeader)+
-			"\n\n✅ Фамилия сохранена!"+profilePublishedMessage,
+			"\n\n✅ Last name saved!"+profilePublishedMessage,
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfileBackCancelButtons(constants.ProfileEditMyProfileCallback),
 		})
@@ -553,10 +553,10 @@ func (h *profileHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) error {
 		// Call the cancel function to stop any ongoing API calls
 		if cf, ok := cancelFunc.(context.CancelFunc); ok {
 			cf()
-			h.messageSenderService.Send(msg.Chat.Id, "Операция поиска профилей отменена.", nil)
+			h.messageSenderService.Send(msg.Chat.Id, "Profile search operation cancelled.", nil)
 		}
 	} else {
-		h.messageSenderService.Send(msg.Chat.Id, "Сессия работы с профилями завершена.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "Profile session ended.", nil)
 	}
 
 	h.RemovePreviousMessage(b, &userId)
@@ -633,7 +633,7 @@ func (h *profileHandler) tryToPublishProfile(b *gotgbot.Bot, ctx *ext.Context, w
 	}
 
 	profilePublishedMessage := fmt.Sprintf(
-		"\n✅ Профиль <a href='%s'>опубликован</a> на канале \"Интро\".",
+		"\n✅ Profile <a href='%s'>published</a> in the \"Intro\" channel.",
 		utils.GetIntroMessageLink(h.config, profile.PublishedMessageID.Int64))
 	return profilePublishedMessage, nil
 }

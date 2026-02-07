@@ -65,11 +65,11 @@ func (s *RandomCoffeeService) SendPoll(ctx context.Context) error {
 
 	// Send reqular message with link to rules and new random coffee poll
 	message :=
-		fmt.Sprintf("Привет! Открываю запись на новый <b>Random Coffee</b> <i>(<a href=\"https://t.me/c/%d/%d/%d\">правила участия</a>)</i>.",
+		fmt.Sprintf("Hey! Opening registration for a new <b>Random Coffee</b> <i>(<a href=\"https://t.me/c/%d/%d/%d\">participation rules</a>)</i>.",
 			s.config.SuperGroupChatID,
 			s.config.RandomCoffeeTopicID,
 			s.config.RandomCoffeeTopicID+1, // next message id (small hack)
-		) + " Голосуй в опросе ниже, если хочешь участвовать ⬇️"
+		) + " Vote in the poll below if you want to participate ⬇️"
 
 	opts := &gotgbot.SendMessageOpts{
 		MessageThreadId: int64(s.config.RandomCoffeeTopicID),
@@ -80,10 +80,10 @@ func (s *RandomCoffeeService) SendPoll(ctx context.Context) error {
 	}
 
 	// Send the poll
-	question := "Будешь участвовать в Random Coffee на следующей неделе? ☕️"
+	question := "Will you participate in Random Coffee next week? ☕️"
 	answers := []gotgbot.InputPollOption{
-		{Text: "Да! 🤗"},
-		{Text: "Не в этот раз 💁🏽"},
+		{Text: "Yes! 🤗"},
+		{Text: "Not this time 💁🏽"},
 	}
 	options := &gotgbot.SendPollOpts{
 		IsAnonymous:           false,
@@ -169,7 +169,7 @@ func (s *RandomCoffeeService) GenerateAndSendPairs() error {
 		return fmt.Errorf("%s: error getting latest poll: %w", utils.GetCurrentTypeName(), err)
 	}
 	if latestPoll == nil {
-		return fmt.Errorf("%s: опрос для рандом кофе не найден", utils.GetCurrentTypeName())
+		return fmt.Errorf("%s: random coffee poll not found", utils.GetCurrentTypeName())
 	}
 
 	// Stop the poll first before generating pairs
@@ -188,7 +188,7 @@ func (s *RandomCoffeeService) GenerateAndSendPairs() error {
 	}
 
 	if len(participants) < 2 {
-		return fmt.Errorf("недостаточно участников для создания пар (нужно минимум 2, зарегистрировалось %d)", len(participants))
+		return fmt.Errorf("not enough participants to create pairs (minimum 2 required, %d registered)", len(participants))
 	}
 
 	// Update participant info using Telegram Bot API if any field has changed
@@ -270,14 +270,14 @@ func (s *RandomCoffeeService) GenerateAndSendPairs() error {
 	}
 
 	var messageBuilder strings.Builder
-	messageBuilder.WriteString(fmt.Sprintf("☕️ Пары для рандом кофе ➪ <b><i>неделя %s</i></b>:\n\n", latestPoll.WeekStartDate.Format("Mon, Jan 2")))
+	messageBuilder.WriteString(fmt.Sprintf("☕️ Random Coffee pairs ➪ <b><i>week of %s</i></b>:\n\n", latestPoll.WeekStartDate.Format("Mon, Jan 2")))
 	for _, pair := range pairsText {
 		messageBuilder.WriteString(fmt.Sprintf("➪ %s\n", pair))
 	}
 	if unpairedUserText != "" {
-		messageBuilder.WriteString(fmt.Sprintf("\n😔 %s без пары и ищет компанию на эту неделю!\n", unpairedUserText))
+		messageBuilder.WriteString(fmt.Sprintf("\n😔 %s is unpaired and looking for company this week!\n", unpairedUserText))
 	}
-	messageBuilder.WriteString("\n🗓 День, время и формат встречи вы выбираете сами. Просто напиши своей паре в личку, когда и в каком формате тебе удобно встретиться.")
+	messageBuilder.WriteString("\n🗓 You choose the day, time, and format of the meeting. Just message your partner directly to arrange when and how you'd like to meet.")
 
 	// Send the pairing message
 	opts := &gotgbot.SendMessageOpts{
@@ -315,7 +315,7 @@ func (s *RandomCoffeeService) formatUserDisplay(user *repositories.User) string 
 	if profile.PublishedMessageID.Valid &&
 		profile.PublishedMessageID.Int64 > 0 {
 		profileLink := utils.GetIntroMessageLink(s.config, profile.PublishedMessageID.Int64)
-		linkedName := fmt.Sprintf(" <i>(<a href=\"%s\">профиль</a>)</i>", profileLink)
+		linkedName := fmt.Sprintf(" <i>(<a href=\"%s\">profile</a>)</i>", profileLink)
 
 		userDisplay += linkedName
 	}

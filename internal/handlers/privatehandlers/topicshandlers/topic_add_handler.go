@@ -100,20 +100,20 @@ func (h *topicAddHandler) startTopicAdd(b *gotgbot.Bot, ctx *ext.Context) error 
 	// Get last actual events to show for selection
 	events, err := h.eventRepository.GetLastActualEvents(10)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Ошибка при получении списка мероприятий.", nil)
+		h.messageSenderService.Reply(msg, "Error retrieving the list of events.", nil)
 		log.Printf("%s: Error during events retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	if len(events) == 0 {
-		h.messageSenderService.Reply(msg, "Нет доступных мероприятий для добавления тем и вопросов.", nil)
+		h.messageSenderService.Reply(msg, "No events available for adding topics and questions.", nil)
 		return handlers.EndConversation()
 	}
 
 	// Format and display event list for selection
 	formattedEvents := formatters.FormatEventListForTopicsView(
 		events,
-		fmt.Sprintf("Выбери ID мероприятия, к которому ты хочешь закинуть темы или вопросы"),
+		fmt.Sprintf("Select the event ID you want to add topics or questions to"),
 	)
 
 	sentMsg, _ := h.messageSenderService.ReplyMarkdownWithReturnMessage(
@@ -138,7 +138,7 @@ func (h *topicAddHandler) handleEventSelection(b *gotgbot.Bot, ctx *ext.Context)
 	if err != nil {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Пожалуйста, отправь корректный ID мероприятия или используй /%s для отмены.", constants.CancelCommand),
+			fmt.Sprintf("Please send a valid event ID or use /%s to cancel.", constants.CancelCommand),
 			nil,
 		)
 		return nil // Stay in the same state
@@ -149,7 +149,7 @@ func (h *topicAddHandler) handleEventSelection(b *gotgbot.Bot, ctx *ext.Context)
 	if err != nil {
 		h.messageSenderService.Reply(
 			msg,
-			fmt.Sprintf("Не удалось найти мероприятие с ID %d. Пожалуйста, проверь ID.", eventID),
+			fmt.Sprintf("Could not find an event with ID %d. Please check the ID.", eventID),
 			nil,
 		)
 		log.Printf("%s: Error during event retrieval: %v", utils.GetCurrentTypeName(), err)
@@ -165,7 +165,7 @@ func (h *topicAddHandler) handleEventSelection(b *gotgbot.Bot, ctx *ext.Context)
 	// Prompt user to enter a topic
 	sentMsg, _ := h.messageSenderService.ReplyMarkdownWithReturnMessage(
 		msg,
-		fmt.Sprintf("Отправь мне темы и вопросы к мероприятию *%s*:", event.Name),
+		fmt.Sprintf("Send me topics and questions for the event *%s*:", event.Name),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.CancelButton(topicAddCallbackConfirmCancel),
 		},
@@ -183,7 +183,7 @@ func (h *topicAddHandler) handleTopicEntry(b *gotgbot.Bot, ctx *ext.Context) err
 	if topicText == "" {
 		h.messageSenderService.Reply(
 			msg,
-			"Тема не может быть пустой. Пожалуйста, введи текст темы или отмените операцию.",
+			"Topic cannot be empty. Please enter the topic text or cancel the operation.",
 			nil,
 		)
 		log.Printf("%s: Empty topic text", utils.GetCurrentTypeName())
@@ -195,7 +195,7 @@ func (h *topicAddHandler) handleTopicEntry(b *gotgbot.Bot, ctx *ext.Context) err
 	if !ok {
 		h.messageSenderService.Reply(
 			msg,
-			"Произошла ошибка: не найден выбранное мероприятие. Пожалуйста, начни заново.",
+			"An error occurred: the selected event was not found. Please start over.",
 			nil,
 		)
 		log.Printf("%s: Event ID not found in user store", utils.GetCurrentTypeName())
@@ -203,7 +203,7 @@ func (h *topicAddHandler) handleTopicEntry(b *gotgbot.Bot, ctx *ext.Context) err
 	}
 
 	eventID := eventIDInterface.(int)
-	userNickname := "не указано"
+	userNickname := "not specified"
 	if ctx.EffectiveUser.Username != "" {
 		userNickname = ctx.EffectiveUser.Username
 	}
@@ -211,7 +211,7 @@ func (h *topicAddHandler) handleTopicEntry(b *gotgbot.Bot, ctx *ext.Context) err
 	// Create the new topic
 	_, err := h.topicRepository.CreateTopic(topicText, userNickname, eventID)
 	if err != nil {
-		h.messageSenderService.Reply(msg, "Ой! Что-то пошло не так...", nil)
+		h.messageSenderService.Reply(msg, "Oops! Something went wrong...", nil)
 		log.Printf("%s: Error during topic creation in database: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -221,10 +221,10 @@ func (h *topicAddHandler) handleTopicEntry(b *gotgbot.Bot, ctx *ext.Context) err
 	adminChatID := h.config.AdminUserID
 
 	adminMsg := fmt.Sprintf(
-		"🔔 *Новая тема добавлена*\n\n"+
-			"_Мероприятие:_ %s\n"+
-			"_Автор:_ @%s\n"+
-			"_Топик:_ %s",
+		"🔔 *New topic added*\n\n"+
+			"_Event:_ %s\n"+
+			"_Author:_ @%s\n"+
+			"_Topic:_ %s",
 		eventName,
 		userNickname,
 		topicText,
@@ -235,7 +235,7 @@ func (h *topicAddHandler) handleTopicEntry(b *gotgbot.Bot, ctx *ext.Context) err
 	h.messageSenderService.Reply(
 		msg,
 		fmt.Sprintf(
-			"Добавлено! \nИспользуй команду /%s для просмотра всех тем и вопросов к мероприятию либо /%s для добавления новых тем и вопросов.",
+			"Added! \nUse the /%s command to view all topics and questions for the event, or /%s to add new topics and questions.",
 			constants.TopicsCommand,
 			constants.TopicAddCommand,
 		),
@@ -267,10 +267,10 @@ func (h *topicAddHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) error {
 		// Call the cancel function to stop any ongoing API calls
 		if cf, ok := cancelFunc.(context.CancelFunc); ok {
 			cf()
-			h.messageSenderService.Reply(msg, "Операция добавления темы отменена.", nil)
+			h.messageSenderService.Reply(msg, "Topic addition operation cancelled.", nil)
 		}
 	} else {
-		h.messageSenderService.Reply(msg, "Операция добавления темы отменена.", nil)
+		h.messageSenderService.Reply(msg, "Topic addition operation cancelled.", nil)
 	}
 
 	h.MessageRemoveInlineKeyboard(b, &ctx.EffectiveUser.Id)

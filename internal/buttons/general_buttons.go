@@ -7,7 +7,7 @@ func CancelButton(callbackData string) gotgbot.InlineKeyboardMarkup {
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: callbackData,
 				},
 			},
@@ -22,7 +22,7 @@ func ConfirmButton(callbackData string) gotgbot.InlineKeyboardMarkup {
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "✅ Подтвердить",
+					Text:         "\u2705 Confirm",
 					CallbackData: callbackData,
 				},
 			},
@@ -37,11 +37,11 @@ func ConfirmAndCancelButton(callbackDataYes string, callbackDataNo string) gotgb
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "✅ Подтвердить",
+					Text:         "\u2705 Confirm",
 					CallbackData: callbackDataYes,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: callbackDataNo,
 				},
 			},
@@ -56,11 +56,11 @@ func BackAndCancelButton(callbackDataBack string, callbackDataCancel string) got
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "◀️ Назад",
+					Text:         "\u25c0\ufe0f Back",
 					CallbackData: callbackDataBack,
 				},
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: callbackDataCancel,
 				},
 			},
@@ -75,17 +75,17 @@ func SearchTypeSelectionButton(callbackDataFast string, callbackDataDeep string,
 		InlineKeyboard: [][]gotgbot.InlineKeyboardButton{
 			{
 				{
-					Text:         "⚡ Быстрый",
+					Text:         "\u26a1 Fast",
 					CallbackData: callbackDataFast,
 				},
 				{
-					Text:         "🔍 Глубокий",
+					Text:         "\U0001f50d Deep",
 					CallbackData: callbackDataDeep,
 				},
 			},
 			{
 				{
-					Text:         "❌ Отмена",
+					Text:         "\u274c Cancel",
 					CallbackData: callbackDataCancel,
 				},
 			},

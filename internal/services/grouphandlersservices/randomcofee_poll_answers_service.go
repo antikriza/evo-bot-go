@@ -87,7 +87,7 @@ func (s *RandomCoffeePollAnswersService) IsAnswerShouldBeProcessed(pollAnswer *g
 		if len(pollAnswer.OptionIds) > 0 && pollAnswer.OptionIds[0] == 0 {
 			s.messageSenderService.SendHtml(
 				s.config.AdminUserID,
-				"🚫 К сожалению, участие в опросе Random Coffee для ботов недоступно. Пожалуйста, отзови свой голос.",
+				"🚫 Unfortunately, bots cannot participate in the Random Coffee poll. Please retract your vote.",
 				nil,
 			)
 		}
@@ -99,8 +99,8 @@ func (s *RandomCoffeePollAnswersService) IsAnswerShouldBeProcessed(pollAnswer *g
 		if len(pollAnswer.OptionIds) > 0 && pollAnswer.OptionIds[0] == 0 {
 			s.messageSenderService.SendHtml(
 				internalUser.TgID,
-				"🚫 К сожалению, участие в опросе Random Coffee для тебя недоступно, так как ты находишься в бане. "+
-					"Пожалуйста, отзови свой голос, и обратись к администратору для разблокировки.",
+				"🚫 Unfortunately, you cannot participate in the Random Coffee poll because you are banned. "+
+					"Please retract your vote and contact an administrator to get unbanned.",
 				nil,
 			)
 		}

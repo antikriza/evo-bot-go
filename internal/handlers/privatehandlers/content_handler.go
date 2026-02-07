@@ -117,7 +117,7 @@ func (h *contentHandler) startContentSearch(b *gotgbot.Bot, ctx *ext.Context) er
 
 	sentMsg, _ := h.messageSenderService.SendWithReturnMessage(
 		msg.Chat.Id,
-		"Пришли мне поисковый запрос по контенту:",
+		"Send me a search query for content:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.CancelButton(contentCallbackConfirmCancel),
 		},
@@ -135,7 +135,7 @@ func (h *contentHandler) selectSearchType(b *gotgbot.Bot, ctx *ext.Context) erro
 	if query == "" {
 		h.messageSenderService.Send(
 			msg.Chat.Id,
-			fmt.Sprintf("Поисковый запрос не может быть пустым. Пожалуйста, введи запрос или используй /%s для отмены.",
+			fmt.Sprintf("Search query cannot be empty. Please enter a query or use /%s to cancel.",
 				constants.CancelCommand),
 			nil,
 		)
@@ -149,7 +149,7 @@ func (h *contentHandler) selectSearchType(b *gotgbot.Bot, ctx *ext.Context) erro
 
 	sentMsg, _ := h.messageSenderService.SendWithReturnMessage(
 		msg.Chat.Id,
-		fmt.Sprintf("Запрос: \"%s\"\n\nВыбери тип поиска:", query),
+		fmt.Sprintf("Query: \"%s\"\n\nSelect search type:", query),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.SearchTypeSelectionButton(
 				contentCallbackFastSearch,
@@ -186,7 +186,7 @@ func (h *contentHandler) processContentSearchWithType(b *gotgbot.Bot, ctx *ext.C
 		msg.Delete(b, nil)
 		warningMsg, _ := h.messageSenderService.SendWithReturnMessage(
 			msg.Chat.Id,
-			fmt.Sprintf("Пожалуйста, дождись окончания обработки предыдущего запроса, или используй /%s для отмены.",
+			fmt.Sprintf("Please wait for the previous request to finish, or use /%s to cancel.",
 				constants.CancelCommand),
 			&gotgbot.SendMessageOpts{ReplyMarkup: buttons.CancelButton(contentCallbackConfirmCancel)},
 		)
@@ -200,7 +200,7 @@ func (h *contentHandler) processContentSearchWithType(b *gotgbot.Bot, ctx *ext.C
 	searchType, okType := searchTypeInterface.(string)
 
 	if !hasSearchType || !okType || strings.TrimSpace(searchType) == "" {
-		h.messageSenderService.Send(msg.Chat.Id, "Сначала выбери тип поиска кнопками выше!", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "Please select a search type using the buttons above first!", nil)
 		return nil
 	}
 
@@ -214,14 +214,14 @@ func (h *contentHandler) processContentSearchWithType(b *gotgbot.Bot, ctx *ext.C
 
 	h.RemovePreviousMessage(b, &userId)
 
-	searchTypeText := "быстрый"
+	searchTypeText := "fast"
 	if searchType == constants.SearchTypeDeep {
-		searchTypeText = "глубокий"
+		searchTypeText = "deep"
 	}
 
 	sentMsg, _ := h.messageSenderService.SendWithReturnMessage(
 		msg.Chat.Id,
-		fmt.Sprintf("Ищу информацию по запросу: \"%s\" (%s поиск)...", query, searchTypeText),
+		fmt.Sprintf("Searching for: \"%s\" (%s search)...", query, searchTypeText),
 		&gotgbot.SendMessageOpts{ReplyMarkup: buttons.CancelButton(contentCallbackConfirmCancel)},
 	)
 	h.SavePreviousMessageInfo(userId, sentMsg)
@@ -230,14 +230,14 @@ func (h *contentHandler) processContentSearchWithType(b *gotgbot.Bot, ctx *ext.C
 
 	messages, err := h.groupMessageRepository.GetAllByGroupTopicID(int64(h.config.ContentTopicID))
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при получении сообщений из базы данных.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while retrieving messages from the database.", nil)
 		log.Printf("%s: Error during message retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	dataMessages, err := h.preprocessingMessages(messages)
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при подготовке сообщений для поиска.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while preparing messages for search.", nil)
 		log.Printf("%s: Error during messages preparation: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -246,7 +246,7 @@ func (h *contentHandler) processContentSearchWithType(b *gotgbot.Bot, ctx *ext.C
 
 	templateText, err := h.promptingTemplateRepository.Get(prompts.GetContentPromptKey, prompts.GetContentPromptDefaultValue)
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при получении шаблона для поиска контента.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while retrieving the content search template.", nil)
 		log.Printf("%s: Error during template retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -289,13 +289,13 @@ func (h *contentHandler) processContentSearchWithType(b *gotgbot.Bot, ctx *ext.C
 	}
 
 	if err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при получении ответа от OpenAI.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while retrieving the response from OpenAI.", nil)
 		log.Printf("%s: Error during OpenAI response retrieval: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
 
 	if err = h.messageSenderService.SendHtml(msg.Chat.Id, responseOpenAi, nil); err != nil {
-		h.messageSenderService.Send(msg.Chat.Id, "Произошла ошибка при отправке ответа.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "An error occurred while sending the response.", nil)
 		log.Printf("%s: Error during message sending: %v", utils.GetCurrentTypeName(), err)
 		return handlers.EndConversation()
 	}
@@ -324,10 +324,10 @@ func (h *contentHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) error {
 		// Call the cancel function to stop any ongoing API calls
 		if cf, ok := cancelFunc.(context.CancelFunc); ok {
 			cf()
-			h.messageSenderService.Send(msg.Chat.Id, "Операция поиска контента отменена.", nil)
+			h.messageSenderService.Send(msg.Chat.Id, "Content search operation cancelled.", nil)
 		}
 	} else {
-		h.messageSenderService.Send(msg.Chat.Id, "Операция поиска контента отменена.", nil)
+		h.messageSenderService.Send(msg.Chat.Id, "Content search operation cancelled.", nil)
 	}
 
 	h.RemovePreviousMessage(b, &ctx.EffectiveUser.Id)

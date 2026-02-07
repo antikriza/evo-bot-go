@@ -49,17 +49,17 @@ const (
 	adminProfilesCtxDataKeyLastMessageTimeFromUser = "admin_profiles_ctx_data_last_message_time_from_user"
 
 	// Menu headers
-	adminProfilesMenuHeader              = "Админ-меню \"Менеджер профилей\""
-	adminProfilesMenuEditHeader          = "Менеджер профилей → Редактирование"
-	adminProfilesMenuCreateByIDHeader    = "Менеджер профилей → Создание по ID"
-	adminProfilesMenuSearchByIDHeader    = "Менеджер профилей → Поиск по ID"
-	adminProfilesMenuSearchByNameHeader  = "Менеджер профилей → Поиск по имени"
-	adminProfilesMenuEditFirstnameHeader = "Менеджер профилей → Редактирование → Имя"
-	adminProfilesMenuEditLastnameHeader  = "Менеджер профилей → Редактирование → Фамилия"
-	adminProfilesMenuEditBioHeader       = "Менеджер профилей → Редактирование → О себе"
-	adminProfilesMenuEditUsernameHeader  = "Менеджер профилей → Редактирование → Username"
-	adminProfilesMenuPublishHeader       = "Менеджер профилей → Публикация"
-	adminProfilesMenuCoffeeBanHeader     = "Менеджер профилей → Бан на кофейные встречи"
+	adminProfilesMenuHeader              = "Admin Menu \"Profile Manager\""
+	adminProfilesMenuEditHeader          = "Profile Manager → Edit"
+	adminProfilesMenuCreateByIDHeader    = "Profile Manager → Create by ID"
+	adminProfilesMenuSearchByIDHeader    = "Profile Manager → Search by ID"
+	adminProfilesMenuSearchByNameHeader  = "Profile Manager → Search by Name"
+	adminProfilesMenuEditFirstnameHeader = "Profile Manager → Edit → First Name"
+	adminProfilesMenuEditLastnameHeader  = "Profile Manager → Edit → Last Name"
+	adminProfilesMenuEditBioHeader       = "Profile Manager → Edit → Bio"
+	adminProfilesMenuEditUsernameHeader  = "Profile Manager → Edit → Username"
+	adminProfilesMenuPublishHeader       = "Profile Manager → Publish"
+	adminProfilesMenuCoffeeBanHeader     = "Profile Manager → Coffee Meetings Ban"
 )
 
 type adminProfilesHandler struct {
@@ -209,7 +209,7 @@ func (h *adminProfilesHandler) showMainMenu(b *gotgbot.Bot, msg *gotgbot.Message
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuHeader)+
-			"\n\nЗдесь ты можешь редактировать профили пользователей или создать новый профиль на основе пересланного сообщения.",
+			"\n\nHere you can edit user profiles or create a new profile based on a forwarded message.",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesMainMenuButtons(),
 		})
@@ -231,7 +231,7 @@ func (h *adminProfilesHandler) handleSearchByUsernameCallback(b *gotgbot.Bot, ct
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuHeader)+
-			"\n\nВведи имя пользователя (с @ или без) для поиска:",
+			"\n\nEnter the username (with or without @) to search:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 		})
@@ -253,7 +253,7 @@ func (h *adminProfilesHandler) handleSearchByTelegramIDCallback(b *gotgbot.Bot, 
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuSearchByIDHeader)+
-			"\n\nВведи ID пользователя Telegram для поиска профиля:",
+			"\n\nEnter the Telegram user ID to search for a profile:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 		})
@@ -275,7 +275,7 @@ func (h *adminProfilesHandler) handleSearchByFullNameCallback(b *gotgbot.Bot, ct
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuSearchByNameHeader)+
-			"\n\nВведи имя и фамилию пользователя (через пробел) для поиска профиля:",
+			"\n\nEnter the user's first and last name (separated by a space) to search for a profile:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 		})
@@ -297,7 +297,7 @@ func (h *adminProfilesHandler) handleCreateByForwardedMessageCallback(b *gotgbot
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuHeader)+
-			"\n\nПерешли мне сообщение от пользователя, для которого нужно создать профиль:",
+			"\n\nForward me a message from the user for whom you want to create a profile:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 		})
@@ -319,7 +319,7 @@ func (h *adminProfilesHandler) handleCreateByTelegramIDCallback(b *gotgbot.Bot, 
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuCreateByIDHeader)+
-			"\n\nВведи ID пользователя Telegram для создания профиля:",
+			"\n\nEnter the Telegram user ID to create a profile:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 		})
@@ -346,7 +346,7 @@ func (h *adminProfilesHandler) handleCreateByTelegramIDInput(b *gotgbot.Bot, ctx
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuCreateByIDHeader)+
-				fmt.Sprintf("\n\nНекорректный формат ID: <b>%s</b>. Введи числовой ID пользователя Telegram:", userIDStr),
+				fmt.Sprintf("\n\nInvalid ID format: <b>%s</b>. Enter a numeric Telegram user ID:", userIDStr),
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 			})
@@ -386,7 +386,7 @@ func (h *adminProfilesHandler) handleCreateByTelegramIDInput(b *gotgbot.Bot, ctx
 	profile, err := h.profileRepository.GetOrCreate(dbUser.ID)
 	if err != nil {
 		_ = h.messageSenderService.Reply(msg,
-			"Произошла ошибка при получении или создании профиля.", nil)
+			"An error occurred while retrieving or creating the profile.", nil)
 		return fmt.Errorf("%s: failed to get/create profile in handleUserIDInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -421,8 +421,8 @@ func (h *adminProfilesHandler) handleSearchByUsernameInput(b *gotgbot.Bot, ctx *
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuHeader)+
-				fmt.Sprintf("\n\nПользователь <b>%s</b> не найден.", username)+
-				"\n\nПопробуй ещё раз, или вернись назад:",
+				fmt.Sprintf("\n\nUser <b>%s</b> not found.", username)+
+				"\n\nTry again, or go back:",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 			})
@@ -443,7 +443,7 @@ func (h *adminProfilesHandler) handleSearchByUsernameInput(b *gotgbot.Bot, ctx *
 	profile, err := h.profileRepository.GetOrCreate(dbUser.ID)
 	if err != nil {
 		_ = h.messageSenderService.Reply(msg,
-			"Произошла ошибка при получении или создании профиля.", nil)
+			"An error occurred while retrieving or creating the profile.", nil)
 		return fmt.Errorf("%s: failed to get/create profile in handleUsernameInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -468,9 +468,9 @@ func (h *adminProfilesHandler) handleCreateByForwardedMessageInput(b *gotgbot.Bo
 		h.RemovePreviousMessage(b, &userId)
 		b.DeleteMessage(msg.Chat.Id, msg.MessageId, nil)
 		msgText := fmt.Sprintf("<b>%s</b>", adminProfilesMenuHeader) +
-			"\n\nЭто не пересланное сообщение от пользователя. Пожалуйста, перешли сообщение от пользователя, для которого нужно создать профиль:"
+			"\n\nThis is not a forwarded message from a user. Please forward a message from the user for whom you want to create a profile:"
 		if msgType == "hidden_user" {
-			msgText += "\n\n<i>Сообщение от скрытого пользователя не может быть использовано для создания профиля.</i>"
+			msgText += "\n\n<i>A message from a hidden user cannot be used to create a profile.</i>"
 		}
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
@@ -494,7 +494,7 @@ func (h *adminProfilesHandler) handleCreateByForwardedMessageInput(b *gotgbot.Bo
 	dbUser, err := h.userRepository.GetOrCreate(forwardedUser)
 	if err != nil {
 		_ = h.messageSenderService.Reply(msg,
-			"Произошла ошибка при создании пользователя.", nil)
+			"An error occurred while creating the user.", nil)
 		return fmt.Errorf("%s: failed to create user in handleForwardedMessage: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -507,7 +507,7 @@ func (h *adminProfilesHandler) handleCreateByForwardedMessageInput(b *gotgbot.Bo
 	profile, err := h.profileRepository.GetOrCreateWithBio(dbUser.ID, msg.Text)
 	if err != nil {
 		_ = h.messageSenderService.Reply(msg,
-			"Произошла ошибка при создании профиля.", nil)
+			"An error occurred while creating the profile.", nil)
 		return fmt.Errorf("%s: failed to create profile in handleForwardedMessage: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -560,7 +560,7 @@ func (h *adminProfilesHandler) handleSearchUserIDInput(b *gotgbot.Bot, ctx *ext.
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuSearchByIDHeader)+
-				fmt.Sprintf("\n\nНекорректный формат ID: <b>%s</b>. Введи числовой ID пользователя Telegram:", userIDStr),
+				fmt.Sprintf("\n\nInvalid ID format: <b>%s</b>. Enter a numeric Telegram user ID:", userIDStr),
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 			})
@@ -585,8 +585,8 @@ func (h *adminProfilesHandler) handleSearchUserIDInput(b *gotgbot.Bot, ctx *ext.
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuSearchByIDHeader)+
-				fmt.Sprintf("\n\nПользователь с ID <b>%d</b> не найден.", telegramID)+
-				"\n\nПопробуй ещё раз, или вернись назад:",
+				fmt.Sprintf("\n\nUser with ID <b>%d</b> not found.", telegramID)+
+				"\n\nTry again, or go back:",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 			})
@@ -607,7 +607,7 @@ func (h *adminProfilesHandler) handleSearchUserIDInput(b *gotgbot.Bot, ctx *ext.
 	profile, err := h.profileRepository.GetOrCreate(dbUser.ID)
 	if err != nil {
 		_ = h.messageSenderService.Reply(msg,
-			"Произошла ошибка при получении профиля.", nil)
+			"An error occurred while retrieving the profile.", nil)
 		return fmt.Errorf("%s: failed to get profile in handleSearchUserIDInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -635,8 +635,8 @@ func (h *adminProfilesHandler) handleSearchByFullNameInput(b *gotgbot.Bot, ctx *
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuSearchByNameHeader)+
-				fmt.Sprintf("\n\nНекорректный формат имени: <b>%s</b>.", fullName)+
-				"\n\nПожалуйста, введи имя и фамилию пользователя через пробел:",
+				fmt.Sprintf("\n\nInvalid name format: <b>%s</b>.", fullName)+
+				"\n\nPlease enter the user's first and last name separated by a space:",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 			})
@@ -664,8 +664,8 @@ func (h *adminProfilesHandler) handleSearchByFullNameInput(b *gotgbot.Bot, ctx *
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuSearchByNameHeader)+
-				fmt.Sprintf("\n\nПользователь с именем <b>%s %s</b> не найден.", firstname, lastname)+
-				"\n\nПопробуй ещё раз, или вернись назад:",
+				fmt.Sprintf("\n\nUser with name <b>%s %s</b> not found.", firstname, lastname)+
+				"\n\nTry again, or go back:",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesStartCallback),
 			})
@@ -686,7 +686,7 @@ func (h *adminProfilesHandler) handleSearchByFullNameInput(b *gotgbot.Bot, ctx *
 	profile, err := h.profileRepository.GetOrCreate(user.ID)
 	if err != nil {
 		_ = h.messageSenderService.Reply(msg,
-			"Произошла ошибка при получении профиля.", nil)
+			"An error occurred while retrieving the profile.", nil)
 		return fmt.Errorf("%s: failed to get profile in handleSearchNameInput: %w", utils.GetCurrentTypeName(), err)
 	}
 
@@ -759,35 +759,35 @@ func (h *adminProfilesHandler) handleEditFieldCallback(b *gotgbot.Bot, ctx *ext.
 	// Determine which field is being edited
 	switch data {
 	case constants.AdminProfilesEditFirstnameCallback:
-		callToAction = "Введи новое значение для поля <b>имя</b>"
+		callToAction = "Enter a new value for the <b>first name</b> field"
 		menuHeader = adminProfilesMenuEditFirstnameHeader
 		nextState = adminProfilesStateAwaitFirstname
-		oldField = "Текущее значение: <code>" + dbUser.Firstname + "</code>"
+		oldField = "Current value: <code>" + dbUser.Firstname + "</code>"
 	case constants.AdminProfilesEditLastnameCallback:
-		callToAction = "Введи новое значение для поля <b>фамилия</b>"
+		callToAction = "Enter a new value for the <b>last name</b> field"
 		menuHeader = adminProfilesMenuEditLastnameHeader
 		nextState = adminProfilesStateAwaitLastname
-		oldField = "Текущее значение: <code>" + dbUser.Lastname + "</code>"
+		oldField = "Current value: <code>" + dbUser.Lastname + "</code>"
 	case constants.AdminProfilesEditUsernameCallback:
-		callToAction = "Введи новое значение для поля <b>username</b> (без @)"
+		callToAction = "Enter a new value for the <b>username</b> field (without @)"
 		menuHeader = adminProfilesMenuEditUsernameHeader
 		nextState = adminProfilesStateAwaitUsername
-		oldField = "Текущее значение: <code>" + dbUser.TgUsername + "</code>"
+		oldField = "Current value: <code>" + dbUser.TgUsername + "</code>"
 	case constants.AdminProfilesEditBioCallback:
-		callToAction = fmt.Sprintf("Введи новое значение для поля <b>биографию</b> (до %d символов)", constants.ProfileBioLengthLimit)
+		callToAction = fmt.Sprintf("Enter a new value for the <b>bio</b> field (up to %d characters)", constants.ProfileBioLengthLimit)
 		menuHeader = adminProfilesMenuEditBioHeader
 		nextState = adminProfilesStateAwaitBio
 		profile.Bio = strings.ReplaceAll(profile.Bio, "<", "&lt;")
 		profile.Bio = strings.ReplaceAll(profile.Bio, ">", "&gt;")
-		oldField = "Текущее значение: <pre>" + profile.Bio + "</pre>"
+		oldField = "Current value: <pre>" + profile.Bio + "</pre>"
 	case constants.AdminProfilesEditCoffeeBanCallback:
-		callToAction = "Нажмите на кнопку, чтобы изменить статус кофейных встреч"
+		callToAction = "Click the button to change the coffee meetings status"
 		menuHeader = adminProfilesMenuCoffeeBanHeader
 		nextState = adminProfilesStateAwaitCoffeeBan
 		if dbUser.HasCoffeeBan {
-			oldField = "Текущее значение: ❌ Запрещено"
+			oldField = "Current value: ❌ Banned"
 		} else {
-			oldField = "Текущее значение: ✅ Разрешено"
+			oldField = "Current value: ✅ Allowed"
 		}
 	default:
 		return fmt.Errorf("%s: unknown callback data: %s", utils.GetCurrentTypeName(), data)
@@ -864,21 +864,21 @@ func (h *adminProfilesHandler) handlePublishProfile(b *gotgbot.Bot, ctx *ext.Con
 		return fmt.Errorf("%s: failed to get profile in handlePublishProfile: %w", utils.GetCurrentTypeName(), err)
 	}
 
-	firstNameString := "└ ❌ Имя"
-	lastNameString := "└ ❌ Фамилию"
-	bioString := "└ ❌ Биографию"
+	firstNameString := "└ ❌ First Name"
+	lastNameString := "└ ❌ Last Name"
+	bioString := "└ ❌ Bio"
 	if dbUser != nil {
 		if dbUser.Firstname != "" {
-			firstNameString = "└ ✅ Имя"
+			firstNameString = "└ ✅ First Name"
 		}
 		if dbUser.Lastname != "" {
-			lastNameString = "└ ✅ Фамилию"
+			lastNameString = "└ ✅ Last Name"
 		}
 	}
 
 	if profile != nil {
 		if profile.Bio != "" {
-			bioString = "└ ✅ Биографию"
+			bioString = "└ ✅ Bio"
 		}
 	}
 
@@ -887,8 +887,8 @@ func (h *adminProfilesHandler) handlePublishProfile(b *gotgbot.Bot, ctx *ext.Con
 		editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuPublishHeader)+
-				"\n\n⚠️ Профиль пользователя неполный. "+
-				fmt.Sprintf("\n\nДля его публикации в канале \"<a href='%s'>Интро</a>\" необходимо указать: ",
+				"\n\n⚠️ The user profile is incomplete. "+
+				fmt.Sprintf("\n\nTo publish it in the \"<a href='%s'>Intro</a>\" channel, the following must be provided: ",
 					utils.GetIntroTopicLink(h.config))+
 				"\n"+firstNameString+
 				"\n"+lastNameString+
@@ -970,7 +970,7 @@ func (h *adminProfilesHandler) handlePublishProfile(b *gotgbot.Bot, ctx *ext.Con
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuPublishHeader)+
-			fmt.Sprintf("\n\n✅ Профиль пользователя успешно опубликован в канале \"<a href='%s'>Интро</a>\"!", utils.GetIntroMessageLink(h.config, profile.PublishedMessageID.Int64)),
+			fmt.Sprintf("\n\n✅ User profile successfully published in the \"<a href='%s'>Intro</a>\" channel!", utils.GetIntroMessageLink(h.config, profile.PublishedMessageID.Int64)),
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesBackStartCancelButtons(constants.AdminProfilesEditMenuCallback),
 		})
@@ -1007,8 +1007,8 @@ func (h *adminProfilesHandler) handleBioInput(b *gotgbot.Bot, ctx *ext.Context) 
 		errMsg, _ := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuEditBioHeader)+
-				fmt.Sprintf("\n\nТекущая длина: %d символов", bioLength)+
-				fmt.Sprintf("\n\nПожалуйста, сократи до %d символов и пришли снова:", constants.ProfileBioLengthLimit),
+				fmt.Sprintf("\n\nCurrent length: %d characters", bioLength)+
+				fmt.Sprintf("\n\nPlease shorten to %d characters and send again:", constants.ProfileBioLengthLimit),
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesEditMenuCallback),
 			})
@@ -1047,7 +1047,7 @@ func (h *adminProfilesHandler) handleFirstnameInput(b *gotgbot.Bot, ctx *ext.Con
 		errMsg, _ := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuEditFirstnameHeader)+
-				"\n\nИмя слишком длинное. Пожалуйста, введи более короткое имя (не более 30 символов):",
+				"\n\nFirst name is too long. Please enter a shorter first name (no more than 30 characters):",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesEditMenuCallback),
 			})
@@ -1086,7 +1086,7 @@ func (h *adminProfilesHandler) handleLastnameInput(b *gotgbot.Bot, ctx *ext.Cont
 		errMsg, _ := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuEditLastnameHeader)+
-				"\n\nФамилия слишком длинная. Пожалуйста, введи более короткую фамилию (не более 30 символов):",
+				"\n\nLast name is too long. Please enter a shorter last name (no more than 30 characters):",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesEditMenuCallback),
 			})
@@ -1130,7 +1130,7 @@ func (h *adminProfilesHandler) handleUsernameInput(b *gotgbot.Bot, ctx *ext.Cont
 		errMsg, _ := h.messageSenderService.SendHtmlWithReturnMessage(
 			msg.Chat.Id,
 			fmt.Sprintf("<b>%s</b>", adminProfilesMenuEditUsernameHeader)+
-				"\n\nUsername слишком длинный. Пожалуйста, введи более короткий username (не более 32 символов):",
+				"\n\nUsername is too long. Please enter a shorter username (no more than 32 characters):",
 			&gotgbot.SendMessageOpts{
 				ReplyMarkup: buttons.ProfilesBackCancelButtons(constants.AdminProfilesEditMenuCallback),
 			})
@@ -1193,7 +1193,7 @@ func (h *adminProfilesHandler) returnToProfileView(b *gotgbot.Bot, ctx *ext.Cont
 
 	successMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
-		"✅ Значение успешно сохранено!",
+		"✅ Value saved successfully!",
 		nil)
 
 	if err != nil {
@@ -1238,16 +1238,16 @@ func (h *adminProfilesHandler) handleToggleCoffeeBanCallback(b *gotgbot.Bot, ctx
 
 	var statusText string
 	if newStatus {
-		statusText = "❌ Запретить"
+		statusText = "❌ Banned"
 	} else {
-		statusText = "✅ Разрешить"
+		statusText = "✅ Allowed"
 	}
 
 	editedMsg, err := h.messageSenderService.SendHtmlWithReturnMessage(
 		msg.Chat.Id,
 		fmt.Sprintf("<b>%s</b>", adminProfilesMenuCoffeeBanHeader)+
-			fmt.Sprintf("\n\nТекущее значение: %s", statusText)+
-			"\n\nВведи новое значение для поля <b>статус кофейных встреч</b>:",
+			fmt.Sprintf("\n\nCurrent value: %s", statusText)+
+			"\n\nEnter a new value for the <b>coffee meetings status</b> field:",
 		&gotgbot.SendMessageOpts{
 			ReplyMarkup: buttons.ProfilesCoffeeBanButtons(constants.AdminProfilesEditMenuCallback, newStatus),
 		})
@@ -1270,7 +1270,7 @@ func (h *adminProfilesHandler) handleCancel(b *gotgbot.Bot, ctx *ext.Context) er
 
 	h.RemovePreviousMessage(b, &userId)
 	_ = h.messageSenderService.Send(
-		msg.Chat.Id, "Админ-сессия работы с профилями завершена.", nil)
+		msg.Chat.Id, "Admin profile management session ended.", nil)
 	h.userStore.Clear(ctx.EffectiveUser.Id)
 
 	return handlers.EndConversation()
