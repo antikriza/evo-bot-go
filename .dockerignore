@@ -1,0 +1,14 @@
+.env
+.env.example
+.git
+.gitignore
+.qoder
+*.md
+*.exe
+*.out
+*.test
+__debug*
+session.json
+last-prompt-log.txt
+last-intro-prompt-log.txt
+last-profile-prompt-log.txt
