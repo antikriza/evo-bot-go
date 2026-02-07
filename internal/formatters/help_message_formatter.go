@@ -24,14 +24,6 @@ func FormatHelpMessage(isAdmin bool, config *config.Config) string {
 		"└ /topics - View topics and questions for upcoming events\n" +
 		"└ /topicAdd - Suggest a topic or question for an event"
 
-	featuresDescription := "\n\n<b>☕️ Random Coffee</b>\n" +
-		"Weekly polls for 1-on-1 coffee meetings with other members. " +
-		"Participate in the poll to get paired with a conversation partner. " +
-		fmt.Sprintf("Pairs are announced at the start of the week in <a href=\"https://t.me/c/%d/%d\">Random Coffee</a>.",
-			config.SuperGroupChatID, config.RandomCoffeeTopicID)
-
-	helpText += featuresDescription
-
 	helpText += "\n\n" +
 		"<i>📖 <a href=\"https://antikriza.github.io/BBD-evolution-code-clone/telegram-archive/course/twa/index.html\">Open AI Course (42 topics)</a></i>"
 
@@ -46,9 +38,6 @@ func FormatHelpMessage(isAdmin bool, config *config.Config) string {
 			fmt.Sprintf("└ /%s - Manage member profiles", constants.AdminProfilesCommand)
 
 		testCommandsHelpText := "\n\n<b>⚙️ Test Commands</b>\n" +
-			fmt.Sprintf("└ /%s - Manually trigger daily summary\n", constants.TrySummarizeCommand) +
-			fmt.Sprintf("└ /%s - Manually create Random Coffee poll\n", constants.TryCreateCoffeePoolCommand) +
-			fmt.Sprintf("└ /%s - Manually generate Random Coffee pairs\n", constants.TryGenerateCoffeePairsCommand) +
 			fmt.Sprintf("└ /%s - Send course link in DM\n", constants.TryLinkToLearnCommand)
 
 		helpText += adminHelpText
